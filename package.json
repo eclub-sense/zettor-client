@@ -6,7 +6,6 @@
     "start": "react-native start"
   },
   "dependencies": {
-    "react-native": "^0.20.0",
-    "react-native-page-swiper": "0.0.2"
+    "react-native": "^0.20.0"
   }
 }
