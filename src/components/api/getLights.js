@@ -15,7 +15,11 @@ module.exports = function () {
                 var entity = entities[i];
                 var name = entity.properties.name;
                 if (name.startsWith('ESP') && !name.endsWith('helper')) { // TODO change
-                    lights[entity.properties.id] = entity.properties.state !== 'OFF';
+                    var light = {
+                        title: entity.properties.id,
+                        state: entity.properties.state === 'ON',
+                    };
+                    lights.push(light);
                 }
             }
 
