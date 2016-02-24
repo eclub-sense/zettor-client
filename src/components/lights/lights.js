@@ -13,6 +13,8 @@ var {
     } = React;
 
 var GetLights = require('../api/getLights');
+var Icon = require('react-native-vector-icons/Ionicons');
+
 var colorDarkGrey = '#2B2D42';
 var colorGrey = '#8D99AE';
 var colorLightGrey = '#EDF2F4';
@@ -61,10 +63,17 @@ module.exports = React.createClass({
             >
                 <View style={styles.row}>
                     <Text style={styles.rowTitle}>{rowData.title}</Text>
-                    <Text style={styles.rowState}>{rowData.state ? 'ON' : 'OFF'}</Text>
+                    {this.getIcon(rowData.state)}
                 </View>
             </TouchableHighlight>
         );
+    },
+    getIcon: function (state) {
+        if (state) {
+            return (<Icon name="ios-lightbulb" size={30} color={colorDarkGrey}/>);
+        }
+
+        return (<Icon name="ios-lightbulb-outline" size={30} color={colorDarkGrey}/>);
     },
     pressRow: function (rowID:number) {
         let newLightsStates = this.state.lights.slice();
@@ -126,8 +135,9 @@ var styles = StyleSheet.create({
     },
     row: {
         flexDirection: 'row',
+        alignItems: 'center',
         alignSelf: 'stretch',
-        padding: 15,
+        padding: 10,
     },
     rowTitle: {
         flex: 1,
