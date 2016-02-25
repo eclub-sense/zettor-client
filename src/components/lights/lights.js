@@ -7,15 +7,17 @@ var React = require('react-native');
 var {
     ListView,
     StyleSheet,
-    Text,
     TouchableHighlight,
     View,
     } = React;
 
 var GetLights = require('../api/getLights');
 var Info = require('../common/info');
-var Icon = require('react-native-vector-icons/Ionicons');
+var Row = require('./row');
 var s = require('../styles/style');
+
+const TURN_ON = 'turn-on';
+const TURN_OFF = 'turn-off';
 
 module.exports = React.createClass({
     getInitialState: function () {
@@ -57,22 +59,10 @@ module.exports = React.createClass({
     },
     renderRow: function (rowData:string, sectionID:number, rowID:number) {
         return (
-            <TouchableHighlight
-                onPress={() => this.pressRow(rowID)}
-                underlayColor={s.cGrey.color}
-            >
-                <View style={styles.row}>
-                    <Text style={[styles.rowTitle, s.cDarkGrey]}>{rowData.title}</Text>
-                    {this.getIcon(rowData.state)}
-                </View>
+            <TouchableHighlight onPress={() => this.pressRow(rowID)} underlayColor={s.cGrey.color}>
+                <Row title={rowData.title} state={rowData.state} />
             </TouchableHighlight>
         );
-    },
-    getIcon: function (state) {
-        if (state) {
-            return (<Icon name="ios-lightbulb" size={30} color={s.cDarkGrey.color}/>);
-        }
-        return (<Icon name="ios-lightbulb-outline" size={30} color={s.cDarkGrey.color}/>);
     },
     pressRow: function (rowID:number) {
         let newLightsStates = this.state.lights.slice();
@@ -83,7 +73,7 @@ module.exports = React.createClass({
         this.updateLightsStates(newLightsStates);
 
         // TODO move post request to function
-        var values = ['turn-off', 'turn-on'];
+        var values = [TURN_OFF, TURN_ON];
 
         var value = values[0]; // TODO get from actions
         if (this.state.lights[rowID].state) {
@@ -129,16 +119,5 @@ var styles = StyleSheet.create({
     },
     separator: {
         height: 1,
-    },
-    row: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        alignSelf: 'stretch',
-        padding: 10,
-    },
-    rowTitle: {
-        flex: 1,
-        fontSize: 20,
-        fontWeight: 'bold',
     },
 });
