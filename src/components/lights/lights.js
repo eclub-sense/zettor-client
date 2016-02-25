@@ -59,8 +59,8 @@ module.exports = React.createClass({
     },
     renderRow: function (rowData:string, sectionID:number, rowID:number) {
         return (
-            <TouchableHighlight onPress={() => this.pressRow(rowID)} underlayColor={s.cGrey.color}>
-                <Row title={rowData.title} state={rowData.state} />
+            <TouchableHighlight onPress={() => this.pressRow(rowID)} underlayColor={'#8D99AE'}>
+                <Row title={rowData.title} state={rowData.state}/>
             </TouchableHighlight>
         );
     },
@@ -72,27 +72,12 @@ module.exports = React.createClass({
         };
         this.updateLightsStates(newLightsStates);
 
-        // TODO move post request to function
-        var values = [TURN_OFF, TURN_ON];
-
-        var value = values[0]; // TODO get from actions
-        if (this.state.lights[rowID].state) {
-            value = values[1];
-        }
-
-        var properties = {
-            "action": value,
-        };
-
-        var formBody = [];
-        for (var property in properties) {
-            var encodedKey = encodeURIComponent(property);
-            var encodedValue = encodeURIComponent(properties[property]);
-            formBody.push(encodedKey + "=" + encodedValue);
-        }
-        formBody = formBody.join("&");
+        var encodedKey = encodeURIComponent("action");
+        var encodedValue = encodeURIComponent(this.state.lights[rowID].state ? TURN_ON : TURN_OFF); // TODO get from actions
+        var formBody = encodedKey + "=" + encodedValue;
 
         var postUrl = serverUrl + '/devices/' + this.state.lights[rowID].title; // TODO fetch device url from server
+
         fetch(postUrl, {
                 method: "POST",
                 headers: {
