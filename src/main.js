@@ -6,14 +6,14 @@ var {
     StyleSheet,
     } = React;
 
-var Lights = require('./components/lights/lights');
+var Actuators = require('./components/actuators/list');
 var Menu = require('./components/menu/list');
 var Sensors = require('./components/sensors/list');
 
 var s = require('./styles/style');
 
 var ROUTES = {
-    lights: Lights,
+    actuators: Actuators,
     menu: Menu,
     sensors: Sensors,
 };

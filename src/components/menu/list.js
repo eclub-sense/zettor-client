@@ -16,12 +16,12 @@ module.exports = React.createClass({
         return {
             dataSource: ds.cloneWithRows([
                 {
-                    title: 'Sensors',
-                    componentName: 'sensors',
+                    title: 'Actuators',
+                    componentName: 'actuators',
                 },
                 {
-                    title: 'Lights',
-                    componentName: 'lights',
+                    title: 'Sensors',
+                    componentName: 'sensors',
                 },
             ]),
         };
