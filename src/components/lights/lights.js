@@ -14,7 +14,7 @@ var {
 var GetLights = require('../api/getLights');
 var Info = require('../common/info');
 var Row = require('./row');
-var s = require('../styles/style');
+var s = require('../../styles/style');
 
 const TURN_ON = 'turn-on';
 const TURN_OFF = 'turn-off';

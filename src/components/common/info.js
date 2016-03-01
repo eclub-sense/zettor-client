@@ -5,7 +5,7 @@ var {
     View,
     } = React;
 
-var s = require('../styles/style');
+var s = require('../../styles/style');
 
 var Info = React.createClass({
     render: function () {

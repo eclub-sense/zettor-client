@@ -7,16 +7,22 @@ var {
     } = React;
 
 var Lights = require('./components/lights/lights');
+var Menu = require('./components/menu/list');
+var Sensors = require('./components/sensors/list');
+
+var s = require('./styles/style');
 
 var ROUTES = {
     lights: Lights,
+    menu: Menu,
+    sensors: Sensors,
 };
 
 module.exports = React.createClass({
     render: function () {
         return <Navigator
-            style={styles.container}
-            initialRoute={{name: 'lights'}}
+            style={[styles.container, s.bgLightGrey]}
+            initialRoute={{name: 'menu'}}
             renderScene={this.renderScene}
             configureScene={() => {return Navigator.SceneConfigs.FloatFromRight;}}
         />
