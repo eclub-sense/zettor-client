@@ -30,7 +30,8 @@ module.exports = React.createClass({
     componentWillMount: function () {
         GetEntities()
             .then((entities) => {
-                this.updateActuatorsStates(entities.actuators);
+                var actuators = this.getActuatorsWithNeededProperties(entities.actuators);
+                this.updateActuatorsStates(actuators);
             });
     },
     render: function () {
@@ -39,6 +40,19 @@ module.exports = React.createClass({
                 {this.actuators()}
             </View>
         );
+    },
+    getActuatorsWithNeededProperties: function (actuators) {
+        var result = [];
+
+        for (var i = 0, l = actuators.length; i < l; i++) {
+            result.push({
+                name: actuators[i].properties.name,
+                state: actuators[i].properties.state,
+                turnOnOffActionUrl: this.getTurnOnOffActionUrl(actuators[i]),
+            });
+        }
+
+        return result;
     },
     updateActuatorsStates: function (data) {
         this.setState({actuators: data});
@@ -61,17 +75,16 @@ module.exports = React.createClass({
         console.log("Rendering rowId: " + rowID);
         return (
             <TouchableHighlight onPress={() => this.pressRow(rowID)} underlayColor={'#8D99AE'}>
-                <Row title={rowData.properties.name} state={rowData.properties.state === STATE_ON}/>
+                <Row title={rowData.name} state={rowData.state === STATE_ON}/>
             </TouchableHighlight>
         );
     },
     pressRow: function (rowID:number) {
-        var newState = this.state.actuators;
         var actuator = this.state.actuators[rowID];
         var encodedKey = encodeURIComponent("action");
-        var encodedValue = encodeURIComponent((actuator.properties.state === STATE_ON) ? TURN_OFF : TURN_ON); // TODO get from actions
+        var encodedValue = encodeURIComponent((actuator.state === STATE_ON) ? TURN_OFF : TURN_ON); // TODO get from actions
         var formBody = encodedKey + "=" + encodedValue;
-        var postUrl = this.getTurnOnOffActionUrl(actuator);
+        var postUrl = actuator.turnOnOffActionUrl;
 
         fetch(postUrl, {
                 method: "POST",
@@ -82,9 +95,16 @@ module.exports = React.createClass({
             }
         )
             .then(function () {
-                newState[rowID].properties.state = actuator.properties.state === STATE_ON ? STATE_OFF : STATE_ON; // TODO
-                this.updateActuatorsStates(newState);
+                let newActuatorsStates = this.state.actuators.slice();
+                newActuatorsStates[rowID] = {
+                    ...this.state.actuators[rowID],
+                    state: this.state.actuators[rowID].state === STATE_ON ? STATE_OFF : STATE_ON,
+                };
+                this.updateActuatorsStates(newActuatorsStates);
             }.bind(this))
+            .catch((error) => {
+                console.warn(error); // TODO show error
+            })
             .done();
         // TODO catch error
     },

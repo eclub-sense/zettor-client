@@ -38,7 +38,7 @@ module.exports = function () {
 
     function getEntitiesSelfLinks(entities) {
         var entitiesSelfLinks = [];
-        for (var i = 0, el = entities.length; i < el; i++) {
+        for (var i = 0, l = entities.length; i < l; i++) {
             entitiesSelfLinks.push(getEntitySelfLink(entities[i]));
         }
 
