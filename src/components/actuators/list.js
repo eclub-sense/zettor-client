@@ -30,7 +30,7 @@ module.exports = React.createClass({
     componentWillMount: function () {
         GetEntities()
             .then((entities) => {
-                var actuators = this.getActuatorsWithNeededProperties(entities.actuators);
+                var actuators = this.getSensorsWithNeededProperties(entities.actuators);
                 this.updateActuatorsStates(actuators);
             });
     },
@@ -41,7 +41,7 @@ module.exports = React.createClass({
             </View>
         );
     },
-    getActuatorsWithNeededProperties: function (actuators) {
+    getSensorsWithNeededProperties: function (actuators) {
         var result = [];
 
         for (var i = 0, l = actuators.length; i < l; i++) {
@@ -72,7 +72,6 @@ module.exports = React.createClass({
         />
     },
     renderRow: function (rowData, sectionID:number, rowID:number) {
-        console.log("Rendering rowId: " + rowID);
         return (
             <TouchableHighlight onPress={() => this.pressRow(rowID)} underlayColor={'#8D99AE'}>
                 <Row title={rowData.name} state={rowData.state === STATE_ON}/>
@@ -106,7 +105,6 @@ module.exports = React.createClass({
                 console.warn(error); // TODO show error
             })
             .done();
-        // TODO catch error
     },
     getTurnOnOffActionUrl: function (actuator) {
         var actions = actuator.actions;
