@@ -25,4 +25,25 @@ module.exports = StyleSheet.create({
         backgroundColor: '#EDF2F4',
     },
 
+    rowsContainer: {
+        flex: 1,
+        justifyContent: 'flex-start',
+        alignItems: 'stretch',
+        paddingTop: 20,
+    },
+    rowsSeparator: {
+        height: 1,
+    },
+
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf: 'stretch',
+        padding: 10,
+    },
+    rowTitle: {
+        flex: 1,
+        fontSize: 30,
+    },
+
 });

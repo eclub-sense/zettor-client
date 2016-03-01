@@ -7,7 +7,7 @@ var {
 
 var s = require('../../styles/style');
 
-var Info = React.createClass({
+module.exports = React.createClass({
     render: function () {
         return <View style={[styles.info, s.bgDarkGrey]}>
             <Text style={[styles.text, s.cLightGrey]}>
@@ -26,5 +26,3 @@ var styles = StyleSheet.create({
         fontSize: 15,
     }
 });
-
-module.exports = Info;

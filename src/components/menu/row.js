@@ -1,35 +1,18 @@
 var React = require('react-native');
 var {
-    StyleSheet,
     Text,
     View,
     } = React;
 
 var s = require('../../styles/style');
 
-var Info = React.createClass({
+module.exports = React.createClass({
     setNativeProps(nativeProps) {
         this._root.setNativeProps(nativeProps);
     },
     render: function () {
-        return <View style={styles.row} ref={component => this._root = component} {...this.props}>
-            <Text style={[styles.rowTitle, s.cDarkGrey]}>{this.props.title}</Text>
+        return <View style={s.row} ref={component => this._root = component} {...this.props}>
+            <Text style={[s.rowTitle, s.cDarkGrey]}>{this.props.title}</Text>
         </View>
     },
 });
-
-var styles = StyleSheet.create({
-    row: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        alignSelf: 'stretch',
-        padding: 10,
-    },
-    rowTitle: {
-        flex: 1,
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-});
-
-module.exports = Info;

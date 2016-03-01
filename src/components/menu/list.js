@@ -3,7 +3,6 @@
 var React = require('react-native');
 var {
     ListView,
-    StyleSheet,
     TouchableHighlight,
     View,
     } = React;
@@ -29,12 +28,12 @@ module.exports = React.createClass({
     },
     render: function () {
         return (
-            <View style={[styles.container, s.bgLightGrey]}>
+            <View style={[s.rowsContainer, s.bgLightGrey]}>
                 <ListView
                     dataSource={this.state.dataSource}
                     renderRow={this.renderRow}
                     renderSeparator={
-                (sectionID, rowID) => <View key={`${sectionID}-${rowID}`} style={[styles.separator, s.bgGrey]} />
+                (sectionID, rowID) => <View key={`${sectionID}-${rowID}`} style={[s.rowsSeparator, s.bgGrey]} />
             }
                 />
             </View>
@@ -49,17 +48,5 @@ module.exports = React.createClass({
     },
     pressRow: function (rowData:string) {
         this.props.navigator.push({name: rowData.componentName});
-    },
-});
-
-var styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'flex-start',
-        alignItems: 'stretch',
-        paddingTop: 20,
-    },
-    separator: {
-        height: 1,
     },
 });

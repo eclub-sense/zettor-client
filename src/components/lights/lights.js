@@ -6,7 +6,6 @@ var serverUrl = config.serverUrl;
 var React = require('react-native');
 var {
     ListView,
-    StyleSheet,
     TouchableHighlight,
     View,
     } = React;
@@ -35,7 +34,7 @@ module.exports = React.createClass({
     },
     render: function () {
         return (
-            <View style={[styles.container, s.bgLightGrey]}>
+            <View style={[s.rowsContainer, s.bgLightGrey]}>
                 {this.lights()}
             </View>
         );
@@ -53,7 +52,7 @@ module.exports = React.createClass({
             dataSource={this.state.lightsDs}
             renderRow={this.renderRow}
             renderSeparator={
-                (sectionID, rowID) => <View key={`${sectionID}-${rowID}`} style={[styles.separator, s.bgGrey]} />
+                (sectionID, rowID) => <View key={`${sectionID}-${rowID}`} style={[s.rowsSeparator, s.bgGrey]} />
             }
         />
     },
@@ -92,17 +91,5 @@ module.exports = React.createClass({
         //})
             .done();
         // TODO catch error
-    },
-});
-
-var styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'flex-start',
-        alignItems: 'stretch',
-        paddingTop: 20,
-    },
-    separator: {
-        height: 1,
     },
 });
