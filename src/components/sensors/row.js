@@ -1,6 +1,7 @@
 var React = require('react-native');
 var {
     Text,
+    TouchableHighlight,
     View,
     } = React;
 
@@ -11,8 +12,14 @@ module.exports = React.createClass({
         this._root.setNativeProps(nativeProps);
     },
     render: function () {
+        var data = this.props.data;
         return <View style={s.row} ref={component => this._root = component} {...this.props}>
-            <Text style={[s.rowTitle, s.cDarkGrey]}>{this.props.title}</Text>
+            <TouchableHighlight onPress={() => this.pressRow(data)} underlayColor={'#8D99AE'}>
+                <Text style={[s.rowTitle, s.cDarkGrey]}>{data.name}</Text>
+            </TouchableHighlight>
         </View>
+    },
+    pressRow: function (data) {
+        this.props.navigator.push({name: 'sensorData', passProps: {data: data}});
     },
 });

@@ -41,6 +41,12 @@ module.exports = StyleSheet.create({
         alignSelf: 'stretch',
         padding: 10,
     },
+    rowData: {
+        flexDirection: 'row',
+        alignSelf: 'stretch',
+        justifyContent: 'space-between',
+        padding: 10,
+    },
     rowTitle: {
         flex: 1,
         fontSize: 30,

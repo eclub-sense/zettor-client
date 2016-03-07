@@ -37,9 +37,19 @@ module.exports = React.createClass({
         var result = [];
 
         for (var i = 0, l = sensors.length; i < l; i++) {
-            result.push({
-                name: sensors[i].properties.name,
-            });
+            var sensorProperties = sensors[i].properties;
+            var propertiesKeys = Object.keys(sensorProperties);
+            var newObj = {
+                name: sensorProperties.name,
+            };
+            for (var j = 0, spl = propertiesKeys.length; j < spl; j++) {
+                var key = propertiesKeys[j];
+                if (key === 'id' || key === 'increment' || key === 'type') {
+                    continue;
+                }
+                newObj[key] = sensorProperties[key]
+            }
+            result.push(newObj);
         }
 
         return result;
@@ -63,7 +73,7 @@ module.exports = React.createClass({
     },
     renderRow: function (rowData, sectionID:number, rowID:number) {
         return (
-            <Row title={rowData.name}/>
+            <Row data={rowData} navigator={this.props.navigator} />
         );
     },
 });
