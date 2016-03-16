@@ -1,7 +1,5 @@
 'use strict';
 
-var config = require('../../../config.json');
-
 var React = require('react-native');
 var {
     ListView,
