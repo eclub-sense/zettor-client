@@ -1,7 +1,8 @@
 'use strict';
 
 var config = require('../../../config.json');
-var webClientId = config.androidWebClientId;
+var iosClientId = config.iosClientId;
+var webClientId = config.webClientId;
 
 var React = require('react-native');
 
@@ -14,7 +15,7 @@ var {
 
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 
-class RNGoogleSigInExample extends React.Component {
+class GoogleSigInExample extends React.Component {
 
     constructor(props) {
         super(props);
@@ -25,8 +26,9 @@ class RNGoogleSigInExample extends React.Component {
 
     componentDidMount() {
         GoogleSignin.configure({
+            iosClientId: iosClientId,
             webClientId: webClientId,
-            offlineAccess: false
+            offlineAccess: true,
         });
 
         GoogleSignin.currentUserAsync().then((user) => {
@@ -39,8 +41,8 @@ class RNGoogleSigInExample extends React.Component {
         if (!this.state.user) {
             return (
                 <View style={styles.container}>
-                    <GoogleSigninButton style={{width: 120, height: 44}} color={GoogleSigninButton.Color.Light}
-                                        size={GoogleSigninButton.Size.Icon} onPress={() => { this._signIn(); }}/>
+                    <GoogleSigninButton style={{width: 212, height: 48}} size={GoogleSigninButton.Size.Standard}
+                                        color={GoogleSigninButton.Color.Light} onPress={this._signIn.bind(this)}/>
                 </View>
             );
         }
@@ -81,7 +83,6 @@ class RNGoogleSigInExample extends React.Component {
             .done();
     }
 }
-;
 
 var styles = StyleSheet.create({
     container: {
@@ -92,4 +93,4 @@ var styles = StyleSheet.create({
     }
 });
 
-module.exports = RNGoogleSigInExample;
+module.exports = GoogleSigInExample;
