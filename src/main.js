@@ -12,7 +12,8 @@ var Sensors = require('./components/sensors/list');
 var SensorData = require('./components/sensors/sensorData');
 var SignIn = require('./components/authentication/signIn');
 var SignUp = require('./components/authentication/signUp');
-var RNGoogleSigninExample = require('./components/authentication/RNGoogleSigninExample');
+var androidRNGoogleSignInExample = require('./components/authentication/androidRNGoogleSignInExample');
+var iOSRNGoogleSignInExample = require('./components/authentication/iOSRNGoogleSignInExample');
 
 var s = require('./styles/style');
 
@@ -23,14 +24,15 @@ var ROUTES = {
     sensorData: SensorData,
     signIn: SignIn,
     signUp: SignUp,
-    RNGoogleSigninExample: RNGoogleSigninExample,
+    androidRNGoogleSignInExample: androidRNGoogleSignInExample,
+    iOSRNGoogleSignInExample: iOSRNGoogleSignInExample,
 };
 
 module.exports = React.createClass({
     render: function () {
         return <Navigator
             style={[styles.container, s.bgLightGrey]}
-            initialRoute={{name: 'RNGoogleSigninExample'}}
+            initialRoute={{name: 'androidRNGoogleSignInExample'}}
             renderScene={this.renderScene}
             configureScene={() => {return Navigator.SceneConfigs.FloatFromRight;}}
         />

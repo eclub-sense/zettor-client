@@ -1,7 +1,7 @@
 'use strict';
 
 var config = require('../../../config.json');
-var iosClientId = config.iosClientId;
+var webClientId = config.androidWebClientId;
 
 var React = require('react-native');
 
@@ -14,7 +14,7 @@ var {
 
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 
-class RNGoogleSiginExample extends React.Component {
+class RNGoogleSigInExample extends React.Component {
 
     constructor(props) {
         super(props);
@@ -25,7 +25,7 @@ class RNGoogleSiginExample extends React.Component {
 
     componentDidMount() {
         GoogleSignin.configure({
-            iosClientId: iosClientId,
+            webClientId: webClientId,
             offlineAccess: false
         });
 
@@ -36,12 +36,11 @@ class RNGoogleSiginExample extends React.Component {
     }
 
     render() {
-
         if (!this.state.user) {
             return (
                 <View style={styles.container}>
-                    <GoogleSigninButton style={{width: 212, height: 48}} size={GoogleSigninButton.Size.Standard}
-                                        color={GoogleSigninButton.Color.Light} onPress={this._signIn.bind(this)}/>
+                    <GoogleSigninButton style={{width: 120, height: 44}} color={GoogleSigninButton.Color.Light}
+                                        size={GoogleSigninButton.Size.Icon} onPress={() => { this._signIn(); }}/>
                 </View>
             );
         }
@@ -52,7 +51,6 @@ class RNGoogleSiginExample extends React.Component {
                     <Text style={{fontSize: 18, fontWeight: 'bold', marginBottom: 20}}>Welcome {this.state.user.name}
                     </Text>
                     <Text>Your email is: {this.state.user.email}</Text>
-                    <Text>Your token expires in: {this.state.user.accessTokenExpirationDate.toFixed()}s</Text>
 
                     <TouchableOpacity onPress={() => {this._signOut(); }}>
                         <View style={{marginTop: 50}}>
@@ -94,4 +92,4 @@ var styles = StyleSheet.create({
     }
 });
 
-module.exports = RNGoogleSiginExample;
+module.exports = RNGoogleSigInExample;

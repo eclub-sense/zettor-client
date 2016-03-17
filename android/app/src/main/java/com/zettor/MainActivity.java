@@ -1,8 +1,9 @@
 package com.zettor;
 
+import co.apptailor.googlesignin.RNGoogleSigninModule;
+import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.facebook.react.ReactActivity;
 import com.oblador.vectoricons.VectorIconsPackage;
-import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 
@@ -37,8 +38,16 @@ public class MainActivity extends ReactActivity {
     protected List<ReactPackage> getPackages() {
         return Arrays.<ReactPackage>asList(
             new MainReactPackage(),
-            new VectorIconsPackage(),
-            new RNGoogleSigninPackage()
+            new RNGoogleSigninPackage(this),
+            new VectorIconsPackage()
         );
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, android.content.Intent data) {
+    if (requestCode == RNGoogleSigninModule.RC_SIGN_IN) {
+        RNGoogleSigninModule.onActivityResult(data);
+    }
+    super.onActivityResult(requestCode, resultCode, data);
     }
 }
