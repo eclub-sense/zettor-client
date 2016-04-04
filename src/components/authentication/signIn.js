@@ -1,6 +1,5 @@
 "use strict";
 
-var Firebase = require('firebase');
 var React = require('react-native');
 var {
     Text,
@@ -9,6 +8,7 @@ var {
     } = React;
 
 var Button = require('../common/button');
+//var Firebase = require('firebase');
 var Error = require('../common/error');
 var s = require('../../styles/style');
 
@@ -43,19 +43,19 @@ module.exports = React.createClass({
         </View>
     },
     onSignInPress: function () {
-        var firebase = new Firebase("https://zettor.firebaseio.com/");
-        firebase.authWithPassword({
-            "email": this.state.email,
-            "password": this.state.password
-        }, function (error, authData) {
-            if (error) {
-                this.setState({errorMessage: 'Login Failed! ' + error});
-            } else {
-                this.props.navigator.immediatelyResetRouteStack([{name: 'menu'}]);
-                //console.log("Authenticated successfully with payload:", authData);
-                // TODO store token
-            }
-        }.bind(this));
+        //var firebase = new Firebase("https://zettor.firebaseio.com/");
+        //firebase.authWithPassword({
+        //    "email": this.state.email,
+        //    "password": this.state.password
+        //}, function (error, authData) {
+        //    if (error) {
+        //        this.setState({errorMessage: 'Login Failed! ' + error});
+        //    } else {
+        //        this.props.navigator.immediatelyResetRouteStack([{name: 'menu'}]);
+        //        //console.log("Authenticated successfully with payload:", authData);
+        //        // TODO store token
+        //    }
+        //}.bind(this));
     },
     onSignUpPress: function () {
         this.props.navigator.push({name: 'signUp'});

@@ -8,6 +8,7 @@
   "dependencies": {
     "firebase": "^2.4.1",
     "react-native": "^0.21.0",
+    "react-native-bssid": "file:///Users/david/Desktop/react-native-bssid",
     "react-native-google-signin": "^0.4.3",
     "react-native-vector-icons": "^1.2.1"
   }

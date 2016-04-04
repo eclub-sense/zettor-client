@@ -8,6 +8,7 @@ var {
 
 var Actuators = require('./components/actuators/list');
 var Menu = require('./components/menu/list');
+var Network = require('./components/network/list');
 var Sensors = require('./components/sensors/list');
 var SensorData = require('./components/sensors/sensorData');
 var SignIn = require('./components/authentication/signIn');
@@ -19,6 +20,7 @@ var s = require('./styles/style');
 var ROUTES = {
     actuators: Actuators,
     menu: Menu,
+    network: Network,
     sensors: Sensors,
     sensorData: SensorData,
     signIn: SignIn,
@@ -30,7 +32,7 @@ module.exports = React.createClass({
     render: function () {
         return <Navigator
             style={[styles.container, s.bgLightGrey]}
-            initialRoute={{name: 'googleSignInExample'}}
+            initialRoute={{name: 'network'}}
             renderScene={this.renderScene}
             configureScene={() => {return Navigator.SceneConfigs.FloatFromRight;}}
         />

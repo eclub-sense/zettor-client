@@ -4,6 +4,7 @@ import co.apptailor.googlesignin.RNGoogleSigninModule;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.facebook.react.ReactActivity;
 import com.oblador.vectoricons.VectorIconsPackage;
+import com.ocetnik.bssid.BssidPackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 
@@ -39,7 +40,8 @@ public class MainActivity extends ReactActivity {
         return Arrays.<ReactPackage>asList(
             new MainReactPackage(),
             new RNGoogleSigninPackage(this),
-            new VectorIconsPackage()
+            new VectorIconsPackage(),
+            new BssidPackage()
         );
     }
 

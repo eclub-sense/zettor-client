@@ -1,6 +1,5 @@
 "use strict";
 
-var Firebase = require('firebase');
 var React = require('react-native');
 var {
     Text,
@@ -10,6 +9,7 @@ var {
 
 var Button = require('../common/button');
 var Error = require('../common/error');
+//var Firebase = require('firebase');
 var s = require('../../styles/style');
 
 module.exports = React.createClass({
@@ -52,19 +52,19 @@ module.exports = React.createClass({
         if (this.state.password !== this.state.passwordConfirmation) {
             return this.setState({errorMessage: 'Your passwords do not match'});
         }
-        var firebase = new Firebase("https://zettor.firebaseio.com");
-        firebase.createUser({
-            email: this.state.email,
-            password: this.state.password
-        }, function (error, userData) {
-            if (error) {
-                this.setState({errorMessage: 'Error creating user: ' + error});
-            } else {
-                this.props.navigator.immediatelyResetRouteStack([{name: 'menu'}]);
-                // console.log("Successfully created user account with uid:", userData.uid);
-                // TODO store token
-            }
-        }.bind(this));
+        //var firebase = new Firebase("https://zettor.firebaseio.com");
+        //firebase.createUser({
+        //    email: this.state.email,
+        //    password: this.state.password
+        //}, function (error, userData) {
+        //    if (error) {
+        //        this.setState({errorMessage: 'Error creating user: ' + error});
+        //    } else {
+        //        this.props.navigator.immediatelyResetRouteStack([{name: 'menu'}]);
+        //        // console.log("Successfully created user account with uid:", userData.uid);
+        //        // TODO store token
+        //    }
+        //}.bind(this));
     },
     onSignInPress: function () {
         this.props.navigator.pop();
