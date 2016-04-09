@@ -1,8 +1,11 @@
 package com.zettor;
 
+import android.content.Intent;
+import android.content.res.Configuration;
 import co.apptailor.googlesignin.RNGoogleSigninModule;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.facebook.react.ReactActivity;
+import com.github.yamill.orientation.OrientationPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.ocetnik.bssid.BssidPackage;
 import com.facebook.react.ReactPackage;
@@ -39,6 +42,7 @@ public class MainActivity extends ReactActivity {
     protected List<ReactPackage> getPackages() {
         return Arrays.<ReactPackage>asList(
             new MainReactPackage(),
+            new OrientationPackage(this),
             new RNGoogleSigninPackage(this),
             new VectorIconsPackage(),
             new BssidPackage()
@@ -51,5 +55,13 @@ public class MainActivity extends ReactActivity {
         RNGoogleSigninModule.onActivityResult(data);
     }
     super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Intent intent = new Intent("onConfigurationChanged");
+        intent.putExtra("newConfig", newConfig);
+        this.sendBroadcast(intent);
     }
 }

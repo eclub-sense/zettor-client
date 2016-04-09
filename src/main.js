@@ -7,6 +7,7 @@ var {
     } = React;
 
 var Actuators = require('./components/actuators/list');
+var CustomScrollView = require('./components/common/customScrollView');
 var Menu = require('./components/menu/list');
 var Network = require('./components/network/list');
 var Sensors = require('./components/sensors/list');
@@ -19,6 +20,7 @@ var s = require('./styles/style');
 
 var ROUTES = {
     actuators: Actuators,
+    customScrollView: CustomScrollView,
     menu: Menu,
     network: Network,
     sensors: Sensors,
@@ -32,7 +34,7 @@ module.exports = React.createClass({
     render: function () {
         return <Navigator
             style={[styles.container, s.bgLightGrey]}
-            initialRoute={{name: 'network'}}
+            initialRoute={{name: 'customScrollView'}}
             renderScene={this.renderScene}
             configureScene={() => {return Navigator.SceneConfigs.FloatFromRight;}}
         />
