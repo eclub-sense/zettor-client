@@ -8,7 +8,6 @@ var {
 
 var Actuators = require('./components/actuators/list');
 var CustomScrollView = require('./components/common/customScrollView');
-var Menu = require('./components/menu/list');
 var Network = require('./components/network/list');
 var Sensors = require('./components/sensors/list');
 var SensorData = require('./components/sensors/sensorData');
@@ -21,7 +20,6 @@ var s = require('./styles/style');
 var ROUTES = {
     actuators: Actuators,
     customScrollView: CustomScrollView,
-    menu: Menu,
     network: Network,
     sensors: Sensors,
     sensorData: SensorData,
@@ -34,7 +32,25 @@ module.exports = React.createClass({
     render: function () {
         return <Navigator
             style={[styles.container, s.bgLightGrey]}
-            initialRoute={{name: 'customScrollView'}}
+            initialRoute={
+                {
+                    name: 'customScrollView',
+                    passProps: {
+                        data: [
+                            {
+                                id: 1,
+                                title: 'Actuators',
+                                icon: 'power',
+                            },
+                            {
+                                id: 2,
+                                title: 'Sensors',
+                                icon: 'arrow-graph-up-right',
+                            }
+                        ]
+                    }
+                }
+            }
             renderScene={this.renderScene}
             configureScene={() => {return Navigator.SceneConfigs.FloatFromRight;}}
         />

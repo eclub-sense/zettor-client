@@ -66,10 +66,6 @@ module.exports = StyleSheet.create({
         justifyContent: 'space-between',
         padding: 10,
     },
-    rowTitle: {
-        flex: 1,
-        fontSize: 30,
-    },
 
     networkRow: {
         flexDirection: 'column',
@@ -118,5 +114,10 @@ module.exports = StyleSheet.create({
     },
     notificationText: {
         fontSize: 15,
+    },
+
+    itemTitle: {
+        flex: 1,
+        fontSize: 30,
     }
 });

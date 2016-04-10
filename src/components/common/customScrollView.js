@@ -10,6 +10,7 @@ var {
     TouchableOpacity,
     } = React;
 
+import Icon from 'react-native-vector-icons/Ionicons';
 import Orientation from 'react-native-orientation';
 
 var s = require('../../styles/style');
@@ -24,30 +25,15 @@ class CustomScrollView extends Component {
             height: -1,
             contentOffset: 0,
             orientation: '',
-            items: this.getItems(),
+            items: [],
         };
     }
 
     componentWillMount() {
-        var items = this.state.items;
-        if (items.length > 1) {
+        this.setState({items: this.getItems()});
 
-            var oldLastItem = items[items.length - 1];
-            var newFirstItem = {
-                id: 'F' + oldLastItem.id,
-                title: oldLastItem.title,
-            };
-            items.unshift(newFirstItem);
-
-            var oldFirstItem = items[1];
-            var newLastItem = {
-                id: 'L' + oldFirstItem.id,
-                title: oldFirstItem.title,
-            };
-            items.push(newLastItem);
-
+        if (this.props.data.length > 1) {
             this.setState({
-                items: items,
                 contentOffset: Dimensions.get('window').height,
             });
         }
@@ -90,24 +76,20 @@ class CustomScrollView extends Component {
     }
 
     getItems() {
-        return [
-            {
-                title: 'First',
-                id: 1,
-            },
-            {
-                title: 'Second',
-                id: 2,
-            },
-            {
-                title: 'Third',
-                id: 3,
-            },
-            {
-                title: 'Fourth',
-                id: 4,
-            },
-        ]
+        var items = this.props.data.slice();
+        if (items.length > 1) {
+            var oldLastItem = items[items.length - 1];
+            var newFirstItem = Object.assign({}, oldLastItem);
+            newFirstItem.id = 'F' + oldLastItem.id;
+            items.unshift(newFirstItem);
+
+            var oldFirstItem = items[1];
+            var newLastItem = Object.assign({}, oldFirstItem);
+            newLastItem.id = 'L' + oldFirstItem.id;
+            items.push(newLastItem);
+        }
+
+        return items;
     }
 
     shiftItems(event:Object) {
@@ -138,7 +120,8 @@ class CustomScrollView extends Component {
         this.state.items.forEach(function (item) {
             items.push(
                 <TouchableOpacity key={item.id} style={styles}>
-                    <Text>{item.title}</Text>
+                    <Text style={[s.itemTitle, s.cDarkGrey]}>{item.title}</Text>
+                    <Icon name={item.icon} size={200} color={s.cDarkGrey.color}/>
                 </TouchableOpacity>
             );
         });
