@@ -54,13 +54,6 @@ class CustomScrollView extends Component {
     }
 
     render() {
-        const items = this.makeItems(
-            [
-                styles.itemWrapper,
-                s.bcDarkGrey,
-                {height: this.state.height - 2 * MARGIN}
-            ]
-        );
         return (
             <ScrollView
                 style={styles.listView}
@@ -70,12 +63,12 @@ class CustomScrollView extends Component {
                 onMomentumScrollEnd={this.shiftItems.bind(this)}
                 contentOffset={{x:0, y:this.state.contentOffset}}
             >
-                {items}
+                {this.makeItems([styles.itemWrapper, s.bcDarkGrey, {height: this.state.height - 2 * MARGIN}])}
             </ScrollView>
         );
     }
 
-    getItems() {
+    getItems():Array<any> {
         var items = this.props.data.slice();
         if (items.length > 1) {
             var oldLastItem = items[items.length - 1];
@@ -119,14 +112,19 @@ class CustomScrollView extends Component {
         var items = [];
         this.state.items.forEach(function (item) {
             items.push(
-                <TouchableOpacity key={item.id} style={styles}>
+                <TouchableOpacity key={item.id} style={styles}
+                                  onPress={this.handleOnPress.bind(this, item.componentName)}>
                     <Text style={[s.itemTitle, s.cDarkGrey]}>{item.title}</Text>
                     <Icon name={item.icon} size={200} color={s.cDarkGrey.color}/>
                 </TouchableOpacity>
             );
-        });
+        }.bind(this));
 
         return items;
+    }
+
+    handleOnPress(componentName) {
+        this.props.navigator.push({name: componentName});
     }
 }
 

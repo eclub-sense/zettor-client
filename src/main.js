@@ -41,11 +41,13 @@ module.exports = React.createClass({
                                 id: 1,
                                 title: 'Actuators',
                                 icon: 'power',
+                                componentName: 'actuators',
                             },
                             {
                                 id: 2,
                                 title: 'Sensors',
                                 icon: 'arrow-graph-up-right',
+                                componentName: 'sensors',
                             }
                         ]
                     }
