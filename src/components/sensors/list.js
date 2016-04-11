@@ -47,7 +47,7 @@ module.exports = React.createClass({
                 if (key === 'id' || key === 'increment' || key === 'type') {
                     continue;
                 }
-                newObj[key] = sensorProperties[key]
+                newObj[key] = sensorProperties[key];
             }
             result.push(newObj);
         }
@@ -60,20 +60,24 @@ module.exports = React.createClass({
     },
     sensors: function () {
         if (this.state.sensors.length === 0) {
-            return <Info text={'No sensors found'}/>
+            return (
+                <Info text={'No sensors found'}/>
+            );
         }
 
-        return <ListView
-            dataSource={this.state.sensorsDs}
-            renderRow={this.renderRow}
-            renderSeparator={
-                (sectionID, rowID) => <View key={`${sectionID}-${rowID}`} style={[s.rowsSeparator, s.bgGrey]} />
-            }
-        />
+        return (
+            <ListView
+                dataSource={this.state.sensorsDs}
+                renderRow={this.renderRow}
+                renderSeparator={
+                    (sectionID, rowID) => <View key={`${sectionID}-${rowID}`} style={[s.rowsSeparator, s.bgGrey]} />
+                }
+            />
+        );
     },
     renderRow: function (rowData, sectionID:number, rowID:number) {
         return (
-            <Row data={rowData} navigator={this.props.navigator} />
+            <Row data={rowData} navigator={this.props.navigator}/>
         );
     },
 });

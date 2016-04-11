@@ -58,16 +58,20 @@ module.exports = React.createClass({
     },
     actuators: function () {
         if (this.state.actuators.length === 0) {
-            return <Info text={'No actuators found'}/>
+            return (
+                <Info text={'No actuators found'}/>
+            );
         }
 
-        return <ListView
-            dataSource={this.state.actuatorsDs}
-            renderRow={this.renderRow}
-            renderSeparator={
+        return (
+            <ListView
+                dataSource={this.state.actuatorsDs}
+                renderRow={this.renderRow}
+                renderSeparator={
                 (sectionID, rowID) => <View key={`${sectionID}-${rowID}`} style={[s.rowsSeparator, s.bgGrey]} />
             }
-        />
+            />
+        );
     },
     renderRow: function (rowData, sectionID:number, rowID:number) {
         return (
@@ -78,13 +82,13 @@ module.exports = React.createClass({
     },
     pressRow: function (rowID:number) {
         var actuator = this.state.actuators[rowID];
-        var encodedKey = encodeURIComponent("action");
+        var encodedKey = encodeURIComponent('action');
         var encodedValue = encodeURIComponent((actuator.state === STATE_ON) ? TURN_OFF : TURN_ON); // TODO get from actions
-        var formBody = encodedKey + "=" + encodedValue;
+        var formBody = encodedKey + '=' + encodedValue;
         var postUrl = actuator.turnOnOffActionUrl;
 
         fetch(postUrl, {
-                method: "POST",
+                method: 'POST',
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

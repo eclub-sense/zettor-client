@@ -38,13 +38,15 @@ module.exports = React.createClass({
         this.setState({networksDs: this.state.networksDs.cloneWithRows(this.state.networks)});
     },
     networks: function () {
-        return <ListView
-            dataSource={this.state.networksDs}
-            renderRow={this.renderRow}
-            renderSeparator={
+        return (
+            <ListView
+                dataSource={this.state.networksDs}
+                renderRow={this.renderRow}
+                renderSeparator={
                 (sectionID, rowID) => <View key={`${sectionID}-${rowID}`} style={[s.rowsSeparator, s.bgGrey]} />
             }
-        />
+            />
+        );
     },
     renderRow: function (rowData) {
         return (

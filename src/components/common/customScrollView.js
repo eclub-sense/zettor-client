@@ -88,9 +88,9 @@ class CustomScrollView extends Component {
     shiftItems(event:Object) {
         var level = event.nativeEvent.contentOffset.y / this.state.height;
         if (this.state.items.length > 1) {
-            if (level == 0) {
-                this.setState({contentOffset: this.state.height * (this.state.items.length - 2)})
-            } else if (level == this.state.items.length - 1) {
+            if (level === 0) {
+                this.setState({contentOffset: this.state.height * (this.state.items.length - 2)});
+            } else if (level === this.state.items.length - 1) {
                 this.setState({contentOffset: this.state.height});
             } else {
                 this.setState({contentOffset: event.nativeEvent.contentOffset.y});
@@ -99,7 +99,7 @@ class CustomScrollView extends Component {
     }
 
     orientationDidChange(orientation:String) {
-        if (this.state.orientation != orientation) {
+        if (this.state.orientation !== orientation) {
             this.setState({
                 width: this.state.height,
                 height: this.state.width,

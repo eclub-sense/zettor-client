@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var React = require('react-native');
 var {
@@ -14,10 +14,12 @@ module.exports = React.createClass({
         this._root.setNativeProps(nativeProps);
     },
     render: function () {
-        return <View style={s.row} ref={component => this._root = component} {...this.props}>
-            <Text style={[s.rowTitle, s.cDarkGrey]}>{this.props.title}</Text>
-            {this.getIcon(this.props.state)}
-        </View>
+        return (
+            <View style={s.row} ref={component => (this._root = component)} {...this.props}>
+                <Text style={[s.rowTitle, s.cDarkGrey]}>{this.props.title}</Text>
+                {this.getIcon(this.props.state)}
+            </View>
+        );
     },
     getIcon: function (state) {
         if (state) {

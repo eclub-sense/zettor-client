@@ -30,9 +30,10 @@ var ROUTES = {
 
 module.exports = React.createClass({
     render: function () {
-        return <Navigator
-            style={[styles.container, s.bgLightGrey]}
-            initialRoute={
+        return (
+            <Navigator
+                style={[styles.container, s.bgLightGrey]}
+                initialRoute={
                 {
                     name: 'customScrollView',
                     passProps: {
@@ -53,9 +54,10 @@ module.exports = React.createClass({
                     }
                 }
             }
-            renderScene={this.renderScene}
-            configureScene={() => {return Navigator.SceneConfigs.FloatFromRight;}}
-        />
+                renderScene={this.renderScene}
+                configureScene={() => {return Navigator.SceneConfigs.FloatFromRight;}}
+            />
+        );
     },
     renderScene: function (route, navigator) {
         var Component = ROUTES[route.name];

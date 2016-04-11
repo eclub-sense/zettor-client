@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var React = require('react-native');
 var {
@@ -21,26 +21,28 @@ module.exports = React.createClass({
         };
     },
     render: function () {
-        return <View style={[s.authenticationContainer, s.bgLightGrey]}>
-            {this.errorMessage()}
-            <Text style={s.authenticationLabel}>Email:</Text>
-            <TextInput
-                style={[s.authenticationInput, s.bcGrey]}
-                value={this.state.email}
-                onChangeText={(text) => this.setState({email: text})}
-            />
+        return (
+            <View style={[s.authenticationContainer, s.bgLightGrey]}>
+                {this.errorMessage()}
+                <Text style={s.authenticationLabel}>Email:</Text>
+                <TextInput
+                    style={[s.authenticationInput, s.bcGrey]}
+                    value={this.state.email}
+                    onChangeText={(text) => this.setState({email: text})}
+                />
 
-            <Text style={s.authenticationLabel}>Password:</Text>
-            <TextInput
-                secureTextEntry={true}
-                style={[s.authenticationInput, s.bcGrey]}
-                value={this.state.password}
-                onChangeText={(text) => this.setState({password: text})}
-            />
+                <Text style={s.authenticationLabel}>Password:</Text>
+                <TextInput
+                    secureTextEntry={true}
+                    style={[s.authenticationInput, s.bcGrey]}
+                    value={this.state.password}
+                    onChangeText={(text) => this.setState({password: text})}
+                />
 
-            <Button text={'Sign In'} onPress={this.onSignInPress}/>
-            <Button text={'I need an account'} onPress={this.onSignUpPress}/>
-        </View>
+                <Button text={'Sign In'} onPress={this.onSignInPress}/>
+                <Button text={'I need an account'} onPress={this.onSignUpPress}/>
+            </View>
+        );
     },
     onSignInPress: function () {
         //var firebase = new Firebase("https://zettor.firebaseio.com/");
@@ -62,7 +64,9 @@ module.exports = React.createClass({
     },
     errorMessage: function () {
         if (this.state.errorMessage) {
-            return <Error text={this.state.errorMessage}/>
+            return (
+                <Error text={this.state.errorMessage}/>
+            );
         }
     },
 });

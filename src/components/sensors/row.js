@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var React = require('react-native');
 var {
@@ -15,11 +15,13 @@ module.exports = React.createClass({
     },
     render: function () {
         var data = this.props.data;
-        return <View style={s.row} ref={component => this._root = component} {...this.props}>
-            <TouchableHighlight onPress={() => this.pressRow(data)} underlayColor={'#8D99AE'}>
-                <Text style={[s.rowTitle, s.cDarkGrey]}>{data.name}</Text>
-            </TouchableHighlight>
-        </View>
+        return (
+            <View style={s.row} ref={component => (this._root = component)} {...this.props}>
+                <TouchableHighlight onPress={() => this.pressRow(data)} underlayColor={'#8D99AE'}>
+                    <Text style={[s.rowTitle, s.cDarkGrey]}>{data.name}</Text>
+                </TouchableHighlight>
+            </View>
+        );
     },
     pressRow: function (data) {
         this.props.navigator.push({name: 'sensorData', passProps: {data: data}});

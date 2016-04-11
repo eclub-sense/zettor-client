@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var React = require('react-native');
 var {
@@ -10,10 +10,12 @@ var s = require('../../styles/style');
 
 module.exports = React.createClass({
     render: function () {
-        return <View style={[s.notification, s.bgDarkGrey]}>
-            <Text style={[s.notificationText, s.cLightGrey]}>
-                {this.props.text}
-            </Text>
-        </View>
+        return (
+            <View style={[s.notification, s.bgDarkGrey]}>
+                <Text style={[s.notificationText, s.cLightGrey]}>
+                    {this.props.text}
+                </Text>
+            </View>
+        );
     },
 });

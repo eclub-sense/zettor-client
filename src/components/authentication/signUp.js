@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var React = require('react-native');
 var {
@@ -22,31 +22,33 @@ module.exports = React.createClass({
         };
     },
     render: function () {
-        return <View style={[s.authenticationContainer, s.bgLightGrey]}>
-            {this.errorMessage()}
-            <Text style={s.authenticationLabel}>Email:</Text>
-            <TextInput
-                value={this.state.email}
-                onChangeText={(text) => this.setState({email: text})}
-                style={s.authenticationInput}/>
+        return (
+            <View style={[s.authenticationContainer, s.bgLightGrey]}>
+                {this.errorMessage()}
+                <Text style={s.authenticationLabel}>Email:</Text>
+                <TextInput
+                    value={this.state.email}
+                    onChangeText={(text) => this.setState({email: text})}
+                    style={s.authenticationInput}/>
 
-            <Text style={s.authenticationLabel}>Password:</Text>
-            <TextInput
-                secureTextEntry={true}
-                value={this.state.password}
-                onChangeText={(text) => this.setState({password: text})}
-                style={s.authenticationInput}/>
+                <Text style={s.authenticationLabel}>Password:</Text>
+                <TextInput
+                    secureTextEntry={true}
+                    value={this.state.password}
+                    onChangeText={(text) => this.setState({password: text})}
+                    style={s.authenticationInput}/>
 
-            <Text style={s.authenticationLabel}>Confirm Password:</Text>
-            <TextInput
-                secureTextEntry={true}
-                value={this.state.passwordConfirmation}
-                onChangeText={(text) => this.setState({passwordConfirmation: text})}
-                style={s.authenticationInput}/>
+                <Text style={s.authenticationLabel}>Confirm Password:</Text>
+                <TextInput
+                    secureTextEntry={true}
+                    value={this.state.passwordConfirmation}
+                    onChangeText={(text) => this.setState({passwordConfirmation: text})}
+                    style={s.authenticationInput}/>
 
-            <Button text={'Sign Up'} onPress={this.onSignUpPress}/>
-            <Button text={'I have an account'} onPress={this.onSignInPress}/>
-        </View>
+                <Button text={'Sign Up'} onPress={this.onSignUpPress}/>
+                <Button text={'I have an account'} onPress={this.onSignInPress}/>
+            </View>
+        );
     },
     onSignUpPress: function () {
         if (this.state.password !== this.state.passwordConfirmation) {
@@ -71,7 +73,9 @@ module.exports = React.createClass({
     },
     errorMessage: function () {
         if (this.state.errorMessage) {
-            return <Error text={this.state.errorMessage}/>
+            return (
+                <Error text={this.state.errorMessage}/>
+            );
         }
     },
 });
