@@ -9,7 +9,7 @@ var {
 var Row = require('./row');
 var s = require('../../styles/style');
 
-import Bssid from 'react-native-bssid';
+//import Bssid from 'react-native-bssid';
 
 module.exports = React.createClass({
     getInitialState: function () {

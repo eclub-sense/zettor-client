@@ -7,7 +7,6 @@ import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.facebook.react.ReactActivity;
 import com.github.yamill.orientation.OrientationPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
-import com.ocetnik.bssid.BssidPackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 
@@ -44,8 +43,7 @@ public class MainActivity extends ReactActivity {
             new MainReactPackage(),
             new OrientationPackage(this),
             new RNGoogleSigninPackage(this),
-            new VectorIconsPackage(),
-            new BssidPackage()
+            new VectorIconsPackage()
         );
     }
 

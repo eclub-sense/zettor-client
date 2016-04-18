@@ -115,7 +115,7 @@ class CustomScrollView extends Component {
                 <TouchableOpacity key={item.id} style={styles}
                                   onPress={this.handleOnPress.bind(this, item.componentName)}>
                     <Text style={[s.itemTitle, s.cDarkGrey]}>{item.title}</Text>
-                    <Icon name={item.icon} size={200} color={s.cDarkGrey.color}/>
+                    <Icon name={item.icon} size={150} color={s.cDarkGrey.color}/>
                 </TouchableOpacity>
             );
         }.bind(this));
