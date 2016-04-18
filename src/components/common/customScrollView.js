@@ -115,22 +115,41 @@ class CustomScrollView extends Component {
     makeItems(styles:Array):Array<any> {
         var items = [];
         this.state.items.forEach(function (item) {
+            var itemValue = this.getItemValue(item);
+            var disabled = item.type === 'sensor';
+
+            items.push(
+                <TouchableOpacity
+                    key={item.id}
+                    style={styles}
+                    activeOpacity={!disabled ? 0.1 : 1}
+                    onPress={!disabled ? this.handleOnPress.bind(this, item) : null}
+                >
+                    <Text style={[s.itemTitle, s.cDarkGrey]}>{item.title}</Text>
+                    {itemValue}
+                </TouchableOpacity>
+            );
+        }.bind(this));
+
+        return items;
+    }
+
+    getItemValue(item) {
+        if (item.type !== 'sensor') {
             var icon;
             if (item.type === 'actuator') {
                 icon = item.state ? item.iconOn : item.iconOff;
             } else {
                 icon = item.icon;
             }
-            items.push(
-                <TouchableOpacity key={item.id} style={styles}
-                                  onPress={this.handleOnPress.bind(this, item)}>
-                    <Text style={[s.itemTitle, s.cDarkGrey]}>{item.title}</Text>
-                    <Icon name={icon} size={150} color={s.cDarkGrey.color}/>
-                </TouchableOpacity>
+            return (
+                <Icon name={icon} size={150} color={s.cDarkGrey.color}/>
             );
-        }.bind(this));
-
-        return items;
+        } else {
+            return (
+                <Text style={s.itemValue}>{item.value}</Text>
+            );
+        }
     }
 
     handleOnPress(item) {
@@ -140,9 +159,8 @@ class CustomScrollView extends Component {
                     var data = [];
                     if (item.type === 'actuators') {
                         data = this.getActuatorsWithNeededProperties(entities.actuators);
-                    }
-                    else if (item.type === 'sensors') {
-                        // TODO
+                    } else if (item.type === 'sensors') {
+                        data = this.getSensorProperties(entities.actuators[0]);
                     }
                     this.pushToNavigator(data);
                 });
@@ -206,6 +224,36 @@ class CustomScrollView extends Component {
         return result;
     }
 
+    getSensorProperties(sensor) {
+        var result = [];
+
+        var sensorProperties = sensor.properties;
+        var propertiesKeys = Object.keys(sensorProperties);
+
+        for (var i = 0, spl = propertiesKeys.length; i < spl; i++) {
+            var key = propertiesKeys[i];
+            if (
+                key === 'id' ||
+                key === 'illumThreshold' ||
+                key === 'increment' ||
+                key === 'type' ||
+                key === 'name' ||
+                key === 'state'
+            ) {
+                continue;
+            }
+
+            result.push({
+                id: i,
+                title: key.charAt(0).toUpperCase() + key.slice(1),
+                type: 'sensor',
+                value: sensorProperties[key],
+            });
+        }
+
+        return result;
+    }
+
     getActuatorActionUrl(actuator) {
         var actions = actuator.actions;
         for (var i = 0, l = actions.length; i < l; i++) {
@@ -217,7 +265,6 @@ class CustomScrollView extends Component {
 }
 
 var styles = StyleSheet.create({
-    listView: {},
     itemWrapper: {
         alignItems: 'center',
         justifyContent: 'center',

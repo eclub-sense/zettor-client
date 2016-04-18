@@ -119,5 +119,8 @@ module.exports = StyleSheet.create({
     itemTitle: {
         flex: 1,
         fontSize: 30,
+    },
+    itemValue: {
+        fontSize: 60,
     }
 });

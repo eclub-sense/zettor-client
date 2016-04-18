@@ -8,8 +8,6 @@ var {
 
 var CustomScrollView = require('./components/common/customScrollView');
 var Network = require('./components/network/list');
-var Sensors = require('./components/sensors/list');
-var SensorData = require('./components/sensors/sensorData');
 var SignIn = require('./components/authentication/signIn');
 var SignUp = require('./components/authentication/signUp');
 var googleSignInExample = require('./components/authentication/googleSignInExample');
@@ -19,8 +17,6 @@ var s = require('./styles/style');
 var ROUTES = {
     customScrollView: CustomScrollView,
     network: Network,
-    sensors: Sensors,
-    sensorData: SensorData,
     signIn: SignIn,
     signUp: SignUp,
     googleSignInExample: googleSignInExample,
