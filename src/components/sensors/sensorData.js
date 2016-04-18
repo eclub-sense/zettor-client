@@ -40,7 +40,6 @@ module.exports = React.createClass({
         );
     },
     renderRow: function (data, sectionID:number, rowID:number) {
-        console.log(data);
         return (
             <DataRow label={data.label} value={data.value}/>
         );

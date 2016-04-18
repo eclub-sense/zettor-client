@@ -13,36 +13,40 @@ var {
 import Icon from 'react-native-vector-icons/Ionicons';
 import Orientation from 'react-native-orientation';
 
+var GetEntities = require('../api/getEntities');
 var s = require('../../styles/style');
 
 var MARGIN = 40;
+const STATE_ON = 'ON';
+const STATE_OFF = 'OFF';
+const TURN_ON = 'turn-on';
+const TURN_OFF = 'turn-off';
 
 class CustomScrollView extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            items: [],
             width: -1,
             height: -1,
-            contentOffset: 0,
             orientation: '',
-            items: [],
+            contentOffset: 0,
         };
     }
 
     componentWillMount() {
-        this.setState({items: this.getItems()});
+        this.setState({
+            items: this.getItems(),
+            width: Dimensions.get('window').width,
+            height: Dimensions.get('window').height,
+            orientation: Orientation.getInitialOrientation(),
+        });
 
         if (this.props.data.length > 1) {
             this.setState({
                 contentOffset: Dimensions.get('window').height,
             });
         }
-
-        this.setState({
-            width: Dimensions.get('window').width,
-            height: Dimensions.get('window').height,
-            orientation: Orientation.getInitialOrientation(),
-        });
     }
 
     componentDidMount() {
@@ -111,11 +115,17 @@ class CustomScrollView extends Component {
     makeItems(styles:Array):Array<any> {
         var items = [];
         this.state.items.forEach(function (item) {
+            var icon;
+            if (item.type === 'actuator') {
+                icon = item.state ? item.iconOn : item.iconOff;
+            } else {
+                icon = item.icon;
+            }
             items.push(
                 <TouchableOpacity key={item.id} style={styles}
-                                  onPress={this.handleOnPress.bind(this, item.componentName)}>
+                                  onPress={this.handleOnPress.bind(this, item)}>
                     <Text style={[s.itemTitle, s.cDarkGrey]}>{item.title}</Text>
-                    <Icon name={item.icon} size={150} color={s.cDarkGrey.color}/>
+                    <Icon name={icon} size={150} color={s.cDarkGrey.color}/>
                 </TouchableOpacity>
             );
         }.bind(this));
@@ -123,8 +133,86 @@ class CustomScrollView extends Component {
         return items;
     }
 
-    handleOnPress(componentName) {
-        this.props.navigator.push({name: componentName});
+    handleOnPress(item) {
+        if (item.type === 'actuators' || item.type === 'sensors') {
+            GetEntities()
+                .then((entities) => {
+                    var data = [];
+                    if (item.type === 'actuators') {
+                        data = this.getActuatorsWithNeededProperties(entities.actuators);
+                    }
+                    else if (item.type === 'sensors') {
+                        // TODO
+                    }
+                    this.pushToNavigator(data);
+                });
+        } else if (item.type === 'actuator') {
+            this.handleActuatorPress(item);
+        }
+    }
+
+    handleActuatorPress(item) {
+        var encodedKey = encodeURIComponent('action');
+        var encodedValue = encodeURIComponent(item.state ? TURN_OFF : TURN_ON);
+        var formBody = encodedKey + '=' + encodedValue;
+
+        fetch(item.actionUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                body: formBody
+            }
+        )
+            .then(function () {
+                let items = this.state.items.slice();
+                items.forEach(function (currentItem, i) {
+                    if (currentItem.deviceId === item.deviceId) {
+                        items[i].state = !currentItem.state;
+                    }
+                });
+                this.setState({items: items});
+            }.bind(this))
+            .catch((error) => {
+                console.warn(error); // TODO show error
+            })
+            .done();
+    }
+
+    pushToNavigator(data) {
+        this.props.navigator.push(
+            {
+                name: 'customScrollView',
+                passProps: {data}
+            }
+        );
+    }
+
+    getActuatorsWithNeededProperties(actuators) {
+        var result = [];
+        for (var i = 0, l = actuators.length; i < l; i++) {
+            result.push({
+                id: i,
+                deviceId: actuators[i].properties.id,
+                title: actuators[i].properties.name,
+                type: 'actuator',
+                state: actuators[i].properties.state === STATE_ON,
+                iconOn: 'ios-lightbulb', // TODO get from API
+                iconOff: 'ios-lightbulb-outline', // TODO get from API
+                actionUrl: this.getActuatorActionUrl(actuators[i]),
+            });
+        }
+
+        return result;
+    }
+
+    getActuatorActionUrl(actuator) {
+        var actions = actuator.actions;
+        for (var i = 0, l = actions.length; i < l; i++) {
+            if (actions[i].name === TURN_ON || actions[i].name === TURN_OFF) {
+                return actions[i].href;
+            }
+        }
     }
 }
 

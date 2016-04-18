@@ -25,10 +25,13 @@ module.exports = function () {
             var result = {actuators: [], sensors: []};
 
             entities.forEach(function (value) {
-                if (value.actions === null) {
-                    result.sensors.push(value);
-                } else {
+                if (
+                    value.actions !== null &&
+                    value.actions.some(action => (action.name === 'turn-on' || action.name === 'turn-off'))
+                ) {
                     result.actuators.push(value);
+                } else {
+                    result.sensors.push(value);
                 }
             });
 

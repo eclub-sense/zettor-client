@@ -6,7 +6,6 @@ var {
     StyleSheet,
     } = React;
 
-var Actuators = require('./components/actuators/list');
 var CustomScrollView = require('./components/common/customScrollView');
 var Network = require('./components/network/list');
 var Sensors = require('./components/sensors/list');
@@ -18,7 +17,6 @@ var googleSignInExample = require('./components/authentication/googleSignInExamp
 var s = require('./styles/style');
 
 var ROUTES = {
-    actuators: Actuators,
     customScrollView: CustomScrollView,
     network: Network,
     sensors: Sensors,
@@ -39,16 +37,16 @@ module.exports = React.createClass({
                     passProps: {
                         data: [
                             {
-                                id: 1,
+                                id: 0,
                                 title: 'Actuators',
+                                type: 'actuators',
                                 icon: 'power',
-                                componentName: 'actuators',
                             },
                             {
-                                id: 2,
+                                id: 1,
                                 title: 'Sensors',
+                                type: 'sensors',
                                 icon: 'arrow-graph-up-right',
-                                componentName: 'sensors',
                             }
                         ]
                     }
