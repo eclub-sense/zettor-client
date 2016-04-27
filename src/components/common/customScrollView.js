@@ -8,13 +8,13 @@ var {
     StyleSheet,
     Text,
     TouchableOpacity,
+    View,
     } = React;
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import Orientation from 'react-native-orientation';
 
 var GetEntities = require('../api/getEntities');
-var s = require('../../styles/style');
 
 var MARGIN = 40;
 const STATE_ON = 'ON';
@@ -60,14 +60,13 @@ class CustomScrollView extends Component {
     render() {
         return (
             <ScrollView
-                style={styles.listView}
                 pagingEnabled={true}
                 showsVerticalScrollIndicator={false}
                 scrollEventThrottle={50}
                 onMomentumScrollEnd={this.shiftItems.bind(this)}
                 contentOffset={{x:0, y:this.state.contentOffset}}
             >
-                {this.makeItems([styles.itemWrapper, s.bcDarkGrey, {height: this.state.height - 2 * MARGIN}])}
+                {this.makeItems([styles.itemWrapper, {height: this.state.height - 2 * MARGIN}])}
             </ScrollView>
         );
     }
@@ -115,18 +114,16 @@ class CustomScrollView extends Component {
     makeItems(styles:Array):Array<any> {
         var items = [];
         this.state.items.forEach(function (item) {
-            var itemValue = this.getItemValue(item);
             var disabled = item.type === 'sensor';
 
             items.push(
                 <TouchableOpacity
                     key={item.id}
                     style={styles}
-                    activeOpacity={!disabled ? 0.1 : 1}
+                    activeOpacity={!disabled ? 0.5 : 1}
                     onPress={!disabled ? this.handleOnPress.bind(this, item) : null}
                 >
-                    <Text style={[s.itemTitle, s.cDarkGrey]}>{item.title}</Text>
-                    {itemValue}
+                    {this.makeItem(item)}
                 </TouchableOpacity>
             );
         }.bind(this));
@@ -134,7 +131,8 @@ class CustomScrollView extends Component {
         return items;
     }
 
-    getItemValue(item) {
+    makeItem(item) {
+        var title = <Text style={styles.itemTitle}>{item.title}</Text>;
         if (item.type !== 'sensor') {
             var icon;
             if (item.type === 'actuator') {
@@ -143,11 +141,17 @@ class CustomScrollView extends Component {
                 icon = item.icon;
             }
             return (
-                <Icon name={icon} size={150} color={s.cDarkGrey.color}/>
+                <View style={styles.itemContainer}>
+                    {title}
+                    <Icon name={icon} size={150} color='#2980B9'/>
+                </View>
             );
         } else {
             return (
-                <Text style={s.itemValue}>{item.value}</Text>
+                <View style={styles.itemContainer}>
+                    {title}
+                    <Text style={styles.itemValue}>{item.value}</Text>
+                </View>
             );
         }
     }
@@ -265,13 +269,27 @@ class CustomScrollView extends Component {
 }
 
 var styles = StyleSheet.create({
-    itemWrapper: {
+    itemContainer: {
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-around',
+        flex: 1,
+    },
+    itemTitle: {
+        fontSize: 50,
+        color: '#2980B9',
+        textAlign: 'center',
+    },
+    itemValue: {
+        fontSize: 50,
+        color: '#2980B9',
+        textAlign: 'center',
+        fontWeight: 'bold',
+    },
+    itemWrapper: {
         borderRadius: 5,
-        borderWidth: 1,
-        padding: 30,
+        padding: 10,
         margin: MARGIN,
+        backgroundColor: '#ECF0F1',
     },
 });
 

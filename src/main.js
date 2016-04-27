@@ -12,8 +12,6 @@ var SignIn = require('./components/authentication/signIn');
 var SignUp = require('./components/authentication/signUp');
 var googleSignInExample = require('./components/authentication/googleSignInExample');
 
-var s = require('./styles/style');
-
 var ROUTES = {
     customScrollView: CustomScrollView,
     network: Network,
@@ -26,7 +24,7 @@ module.exports = React.createClass({
     render: function () {
         return (
             <Navigator
-                style={[styles.container, s.bgLightGrey]}
+                style={styles.container}
                 initialRoute={
                 {
                     name: 'customScrollView',
@@ -62,5 +60,6 @@ module.exports = React.createClass({
 var styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#2C3E50',
     }
 });
