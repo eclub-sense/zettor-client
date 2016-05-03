@@ -7,14 +7,12 @@ var {
     } = React;
 
 var CustomScrollView = require('./components/common/customScrollView');
-var Network = require('./components/network/list');
 var SignIn = require('./components/authentication/signIn');
 var SignUp = require('./components/authentication/signUp');
 var googleSignInExample = require('./components/authentication/googleSignInExample');
 
 var ROUTES = {
     customScrollView: CustomScrollView,
-    network: Network,
     signIn: SignIn,
     signUp: SignUp,
     googleSignInExample: googleSignInExample,

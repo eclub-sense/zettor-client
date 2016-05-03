@@ -67,17 +67,6 @@ module.exports = StyleSheet.create({
         padding: 10,
     },
 
-    networkRow: {
-        flexDirection: 'column',
-        alignItems: 'center',
-        alignSelf: 'stretch',
-        padding: 10,
-    },
-    networkRowText: {
-        flex: 1,
-        fontSize: 10,
-    },
-
     button: {
         justifyContent: 'center',
         alignItems: 'center',

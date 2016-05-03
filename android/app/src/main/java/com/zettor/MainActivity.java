@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import co.apptailor.googlesignin.RNGoogleSigninModule;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.facebook.react.ReactActivity;
+import com.devstepbcn.wifi.AndroidWifiPackage;
 import com.github.yamill.orientation.OrientationPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.react.ReactPackage;
@@ -41,6 +42,7 @@ public class MainActivity extends ReactActivity {
     protected List<ReactPackage> getPackages() {
         return Arrays.<ReactPackage>asList(
             new MainReactPackage(),
+            new AndroidWifiPackage(),
             new OrientationPackage(this),
             new RNGoogleSigninPackage(this),
             new VectorIconsPackage()

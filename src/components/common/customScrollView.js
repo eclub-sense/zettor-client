@@ -4,6 +4,7 @@ var React = require('react-native');
 var {
     Component,
     Dimensions,
+    Platform,
     ScrollView,
     StyleSheet,
     Text,
@@ -15,8 +16,10 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Orientation from 'react-native-orientation';
 
 var GetEntities = require('../api/getEntities');
+var wifi = require('react-native-android-wifi');
 
 var MARGIN = 40;
+const MENU_ITEMS = ['actuators', 'sensors', 'hubs'];
 const STATE_ON = 'ON';
 const STATE_OFF = 'OFF';
 const TURN_ON = 'turn-on';
@@ -78,6 +81,13 @@ class CustomScrollView extends Component {
             return this.getItemsArray(data);
         }
 
+        if (this.props.type == 'hubs') {
+            this.getHubsData()
+                .then((data)=> {
+                    return this.getItemsArray(data);
+                });
+        }
+
         GetEntities()
             .then((entities) => {
                 if (entities === null) {
@@ -111,8 +121,46 @@ class CustomScrollView extends Component {
                 title: 'Sensors',
                 type: 'sensors',
                 icon: 'arrow-graph-up-right',
+            },
+            {
+                id: 2,
+                title: 'HUBs',
+                type: 'hubs',
+                icon: 'android-cloud',
             }
         ];
+    }
+
+    getHubsData() {
+        return new Promise(
+            function (resolve, reject) {
+                wifi.loadWifiList((wifiStringList) => {
+                        var data = [];
+                        var wifiArray = JSON.parse(wifiStringList);
+                        wifiArray.sort(function (a, b) {
+                            var aLevel = a.level;
+                            var bLevel = b.level;
+                            return aLevel < bLevel ? 1 : aLevel > bLevel ? -1 : 0;
+                        });
+                        var id = 0;
+                        wifiArray.forEach(function (network) {
+                            data.push({
+                                id: id,
+                                title: network.SSID,
+                                type: 'hub',
+                                value: network.level + 100 + ' %',
+                                bssid: network.BSSID,
+                            });
+                            id++;
+                        });
+                        resolve(data);
+                    },
+                    (error) => {
+                        reject(error);
+                    }
+                );
+            }
+        );
     }
 
     getItemsArray(data) {
@@ -155,7 +203,7 @@ class CustomScrollView extends Component {
         }
     }
 
-    makeItems(styles:Array):Array<any> {
+    makeItems(styles:Array):Array < any > {
         var items = [];
         if (!this.state.isLoading) {
             if (this.state.items && this.state.items.length > 0) {
@@ -235,7 +283,7 @@ class CustomScrollView extends Component {
     }
 
     handleOnPress(item) {
-        if (item.type === 'actuators' || item.type === 'sensors') {
+        if (MENU_ITEMS.indexOf(item.type) !== -1) {
             this.pushToNavigator(item.type);
         } else if (item.type === 'actuator') {
             this.handleActuatorPress(item);
@@ -246,7 +294,7 @@ class CustomScrollView extends Component {
         this.props.navigator.push(
             {
                 name: 'customScrollView',
-                passProps: {type: type, isLoading: true}
+                passProps: {type: type, isLoading: false}
             }
         );
     }
