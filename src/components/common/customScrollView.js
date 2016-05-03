@@ -10,6 +10,7 @@ var {
     Text,
     TouchableOpacity,
     View,
+    ViewPagerAndroid,
     } = React;
 
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -62,17 +63,28 @@ class CustomScrollView extends Component {
     }
 
     render() {
-        return (
-            <ScrollView
-                pagingEnabled={true}
-                showsVerticalScrollIndicator={false}
-                scrollEventThrottle={50}
-                onMomentumScrollEnd={this.shiftItems.bind(this)}
-                contentOffset={{x:0, y:this.state.contentOffset}}
-            >
-                {this.makeItems([styles.itemWrapper, {height: this.state.height - 2 * MARGIN}])}
-            </ScrollView>
-        );
+        if (Platform.OS === 'ios') {
+            return (
+                <ScrollView
+                    pagingEnabled={true}
+                    showsVerticalScrollIndicator={false}
+                    scrollEventThrottle={50}
+                    onMomentumScrollEnd={this.shiftItems.bind(this)}
+                    contentOffset={{x:0, y:this.state.contentOffset}}
+                >
+                    {this.makeItems([styles.itemWrapper, {height: this.state.height - 2 * MARGIN}])}
+                </ScrollView>
+            );
+        }
+        if (Platform.OS === 'android') {
+            return (
+                <ViewPagerAndroid
+                    style={styles.viewPager}
+                    initialPage={0}>
+                    {this.makeItems([styles.itemWrapper, {height: this.state.height - 2 * MARGIN}])}
+                </ViewPagerAndroid>
+            )
+        }
     }
 
     fetchItems():Array<any> {
@@ -210,38 +222,44 @@ class CustomScrollView extends Component {
                 this.state.items.forEach(function (item) {
                     var disabled = item.type === 'sensor';
                     items.push(
-                        <TouchableOpacity
-                            key={item.id}
-                            style={styles}
-                            activeOpacity={!disabled ? 0.5 : 1}
-                            onPress={!disabled ? this.handleOnPress.bind(this, item) : null}
-                        >
-                            {this.makeItem(item)}
-                        </TouchableOpacity>
+                        <View key={item.id}>
+                            <TouchableOpacity
+                                key={item.id}
+                                style={styles}
+                                activeOpacity={!disabled ? 0.5 : 1}
+                                onPress={!disabled ? this.handleOnPress.bind(this, item) : null}
+                            >
+                                {this.makeItem(item)}
+                            </TouchableOpacity>
+                        </View>
                     );
                 }.bind(this));
             } else {
                 items.push(
-                    <TouchableOpacity
-                        key={'noData'}
-                        style={styles}
-                        activeOpacity={1}
-                        onPress={null}
-                    >
-                        {this.makeInfoItem('No data')}
-                    </TouchableOpacity>
+                    <View key={'noData'}>
+                        <TouchableOpacity
+                            key={'noData'}
+                            style={styles}
+                            activeOpacity={1}
+                            onPress={null}
+                        >
+                            {this.makeInfoItem('No data')}
+                        </TouchableOpacity>
+                    </View>
                 )
             }
         } else {
             items.push(
-                <TouchableOpacity
-                    key={'loading'}
-                    style={styles}
-                    activeOpacity={1}
-                    onPress={null}
-                >
-                    {this.makeInfoItem('Loading...')}
-                </TouchableOpacity>
+                <View key={'loading'}>
+                    <TouchableOpacity
+                        key={'loading'}
+                        style={styles}
+                        activeOpacity={1}
+                        onPress={null}
+                    >
+                        {this.makeInfoItem('Loading...')}
+                    </TouchableOpacity>
+                </View>
             )
         }
 
@@ -407,6 +425,9 @@ var styles = StyleSheet.create({
         padding: 10,
         margin: MARGIN,
         backgroundColor: '#ECF0F1',
+    },
+    viewPager: {
+        flex: 1,
     },
 });
 
