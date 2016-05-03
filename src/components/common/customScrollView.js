@@ -26,6 +26,7 @@ class CustomScrollView extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            isLoading: true,
             items: [],
             width: -1,
             height: -1,
@@ -36,13 +37,13 @@ class CustomScrollView extends Component {
 
     componentWillMount() {
         this.setState({
-            items: this.getItems(),
+            isLoading: this.props.isLoading,
+            items: this.fetchItems(),
             width: Dimensions.get('window').width,
             height: Dimensions.get('window').height,
             orientation: Orientation.getInitialOrientation(),
         });
-
-        if (this.props.data.length > 1) {
+        if (this.state.items.length > 1) {
             this.setState({
                 contentOffset: Dimensions.get('window').height,
             });
@@ -71,8 +72,51 @@ class CustomScrollView extends Component {
         );
     }
 
-    getItems():Array<any> {
-        var items = this.props.data.slice();
+    fetchItems():Array<any> {
+        if (this.props.type == 'menu') {
+            var data = this.getMenuData();
+            return this.getItemsArray(data);
+        }
+
+        GetEntities()
+            .then((entities) => {
+                if (entities === null) {
+                    this.setState({isLoading: false});
+                }
+                var data = [];
+                if (this.props.type === 'actuators') {
+                    data = this.getActuatorsWithNeededProperties(entities.actuators);
+                    return this.getItemsArray(data);
+                } else if (this.props.type === 'sensors') {
+                    data = this.getSensorProperties(entities.actuators[0]);
+                    return this.getItemsArray(data);
+                }
+            })
+            .catch((error) => {
+                this.setState({isLoading: false});
+            })
+            .done();
+    }
+
+    getMenuData() {
+        return [
+            {
+                id: 0,
+                title: 'Actuators',
+                type: 'actuators',
+                icon: 'power',
+            },
+            {
+                id: 1,
+                title: 'Sensors',
+                type: 'sensors',
+                icon: 'arrow-graph-up-right',
+            }
+        ];
+    }
+
+    getItemsArray(data) {
+        var items = data.slice();
         if (items.length > 1) {
             var oldLastItem = items[items.length - 1];
             var newFirstItem = Object.assign({}, oldLastItem);
@@ -113,20 +157,45 @@ class CustomScrollView extends Component {
 
     makeItems(styles:Array):Array<any> {
         var items = [];
-        this.state.items.forEach(function (item) {
-            var disabled = item.type === 'sensor';
-
+        if (!this.state.isLoading) {
+            if (this.state.items && this.state.items.length > 0) {
+                this.state.items.forEach(function (item) {
+                    var disabled = item.type === 'sensor';
+                    items.push(
+                        <TouchableOpacity
+                            key={item.id}
+                            style={styles}
+                            activeOpacity={!disabled ? 0.5 : 1}
+                            onPress={!disabled ? this.handleOnPress.bind(this, item) : null}
+                        >
+                            {this.makeItem(item)}
+                        </TouchableOpacity>
+                    );
+                }.bind(this));
+            } else {
+                items.push(
+                    <TouchableOpacity
+                        key={'noData'}
+                        style={styles}
+                        activeOpacity={1}
+                        onPress={null}
+                    >
+                        {this.makeInfoItem('No data')}
+                    </TouchableOpacity>
+                )
+            }
+        } else {
             items.push(
                 <TouchableOpacity
-                    key={item.id}
+                    key={'loading'}
                     style={styles}
-                    activeOpacity={!disabled ? 0.5 : 1}
-                    onPress={!disabled ? this.handleOnPress.bind(this, item) : null}
+                    activeOpacity={1}
+                    onPress={null}
                 >
-                    {this.makeItem(item)}
+                    {this.makeInfoItem('Loading...')}
                 </TouchableOpacity>
-            );
-        }.bind(this));
+            )
+        }
 
         return items;
     }
@@ -156,21 +225,30 @@ class CustomScrollView extends Component {
         }
     }
 
+    makeInfoItem(title) {
+        // TODO style
+        return (
+            <View style={styles.itemContainer}>
+                <Text style={styles.itemTitle}>{title}</Text>
+            </View>
+        );
+    }
+
     handleOnPress(item) {
         if (item.type === 'actuators' || item.type === 'sensors') {
-            GetEntities()
-                .then((entities) => {
-                    var data = [];
-                    if (item.type === 'actuators') {
-                        data = this.getActuatorsWithNeededProperties(entities.actuators);
-                    } else if (item.type === 'sensors') {
-                        data = this.getSensorProperties(entities.actuators[0]);
-                    }
-                    this.pushToNavigator(data);
-                });
+            this.pushToNavigator(item.type);
         } else if (item.type === 'actuator') {
             this.handleActuatorPress(item);
         }
+    }
+
+    pushToNavigator(type) {
+        this.props.navigator.push(
+            {
+                name: 'customScrollView',
+                passProps: {type: type, isLoading: true}
+            }
+        );
     }
 
     handleActuatorPress(item) {
@@ -196,18 +274,9 @@ class CustomScrollView extends Component {
                 this.setState({items: items});
             }.bind(this))
             .catch((error) => {
-                console.warn(error); // TODO show error
+                console.warn('handleActuatorPress', error);
             })
             .done();
-    }
-
-    pushToNavigator(data) {
-        this.props.navigator.push(
-            {
-                name: 'customScrollView',
-                passProps: {data}
-            }
-        );
     }
 
     getActuatorsWithNeededProperties(actuators) {

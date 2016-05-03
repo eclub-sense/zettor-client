@@ -12,11 +12,12 @@ module.exports = function () {
             var entities = json.entities;
             var selfLinks = getEntitiesSelfLinks(entities);
 
-            return fetchEntities(selfLinks);
+            return  fetchEntities(selfLinks);
         })
-        .catch((error) => {
-            console.warn(error); // TODO show error
+        .catch(() => {
+            return null;
         });
+        //.done();
 
     function fetchEntities(selfLinks) {
         var allEntities = selfLinks.map(fetchEntity);
@@ -68,7 +69,8 @@ module.exports = function () {
                 return json;
             })
             .catch((error) => {
-                console.warn(error); // TODO show error
-            });
+                console.warn('fetchEntity', error);
+            })
+            .done();
     }
 };

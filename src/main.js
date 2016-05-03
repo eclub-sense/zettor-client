@@ -29,20 +29,8 @@ module.exports = React.createClass({
                 {
                     name: 'customScrollView',
                     passProps: {
-                        data: [
-                            {
-                                id: 0,
-                                title: 'Actuators',
-                                type: 'actuators',
-                                icon: 'power',
-                            },
-                            {
-                                id: 1,
-                                title: 'Sensors',
-                                type: 'sensors',
-                                icon: 'arrow-graph-up-right',
-                            }
-                        ]
+                        type: 'menu',
+                        isLoading: false,
                     }
                 }
             }
