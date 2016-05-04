@@ -22,7 +22,7 @@ var wifi = require('react-native-android-wifi');
 var MARGIN = 40;
 const MENU_ITEMS = ['actuators', 'sensors', 'hubs'];
 const STATE_ON = 'ON';
-const STATE_OFF = 'OFF';
+//const STATE_OFF = 'OFF';
 const TURN_ON = 'turn-on';
 const TURN_OFF = 'turn-off';
 
@@ -41,21 +41,31 @@ class CustomScrollView extends Component {
 
     componentWillMount() {
         this.setState({
-            isLoading: this.props.isLoading,
-            items: this.fetchItems(),
             width: Dimensions.get('window').width,
             height: Dimensions.get('window').height,
             orientation: Orientation.getInitialOrientation(),
         });
-        if (this.state.items.length > 1) {
-            this.setState({
-                contentOffset: Dimensions.get('window').height,
-            });
-        }
     }
 
     componentDidMount() {
         Orientation.addOrientationListener(this.orientationDidChange.bind(this));
+        this.fetchItems()
+            .then(
+                function (items) {
+                    this.setState({items: items, isLoading: false});
+                    if (Platform.OS === 'ios' && items.length > 1) {
+                        this.setState({
+                            contentOffset: Dimensions.get('window').height,
+                        });
+                    }
+                }.bind(this),
+                function (error) {
+                    console.warn(error);
+                }
+            )
+            .catch((error) => {
+                console.warn(error);
+            });
     }
 
     componentWillUnmount() {
@@ -64,42 +74,68 @@ class CustomScrollView extends Component {
 
     render() {
         if (Platform.OS === 'ios') {
-            return (
-                <ScrollView
-                    pagingEnabled={true}
-                    showsVerticalScrollIndicator={false}
-                    scrollEventThrottle={50}
-                    onMomentumScrollEnd={this.shiftItems.bind(this)}
-                    contentOffset={{x:0, y:this.state.contentOffset}}
-                >
-                    {this.makeItems([styles.itemWrapper, {height: this.state.height - 2 * MARGIN}])}
-                </ScrollView>
-            );
-        }
-        if (Platform.OS === 'android') {
-            return (
-                <ViewPagerAndroid
-                    style={styles.viewPager}
-                    initialPage={0}>
-                    {this.makeItems([styles.itemWrapper, {height: this.state.height - 2 * MARGIN}])}
-                </ViewPagerAndroid>
-            )
+            return this.iosScrollView();
+        } else if (Platform.OS === 'android') {
+            return this.androidScrollView();
+        } else {
+            console.warn(`Unknown platform ${Platform.OS}`);
         }
     }
 
+    androidScrollView() {
+        return (
+            <ViewPagerAndroid
+                style={styles.viewPager}
+                initialPage={0}>
+                {this.makeItems([styles.itemWrapper, {height: this.state.height - 2 * MARGIN}])}
+            </ViewPagerAndroid>
+        );
+    }
+
+    iosScrollView() {
+        return (
+            <ScrollView
+                pagingEnabled={true}
+                showsVerticalScrollIndicator={false}
+                scrollEventThrottle={50}
+                onMomentumScrollEnd={this.shiftItems.bind(this)}
+                contentOffset={{x:0, y:this.state.contentOffset}}
+            >
+                {this.makeItems([styles.itemWrapper, {height: this.state.height - 2 * MARGIN}])}
+            </ScrollView>
+        );
+    }
+
     fetchItems():Array<any> {
-        if (this.props.type == 'menu') {
-            var data = this.getMenuData();
-            return this.getItemsArray(data);
+
+        if (this.props.type === 'menu') {
+            return new Promise(function (resolve, reject) {
+                this.getMenuData()
+                    .then(function (data) {
+                        resolve(this.getItemsArray(data));
+                    }.bind(this))
+                    .catch(function (error) {
+                        reject(error);
+                    });
+            }.bind(this));
         }
 
-        if (this.props.type == 'hubs') {
-            this.getHubsData()
-                .then((data)=> {
-                    return this.getItemsArray(data);
-                });
+        if (this.props.type === 'hubs') {
+            return new Promise(function (resolve, reject) {
+                if (Platform.OS !== 'android') {
+                    reject('Detecting HUBs is available only on Android platform');
+                }
+                this.getHubsData()
+                    .then(function (data) {
+                        resolve(this.getItemsArray(data));
+                    }.bind(this))
+                    .catch(function (error) {
+                        reject(error);
+                    });
+            }.bind(this));
         }
 
+        // TODO return new Promise
         GetEntities()
             .then((entities) => {
                 if (entities === null) {
@@ -115,32 +151,41 @@ class CustomScrollView extends Component {
                 }
             })
             .catch((error) => {
+                // TODO
                 this.setState({isLoading: false});
             })
             .done();
     }
 
     getMenuData() {
-        return [
-            {
-                id: 0,
-                title: 'Actuators',
-                type: 'actuators',
-                icon: 'power',
-            },
-            {
-                id: 1,
-                title: 'Sensors',
-                type: 'sensors',
-                icon: 'arrow-graph-up-right',
-            },
-            {
-                id: 2,
-                title: 'HUBs',
-                type: 'hubs',
-                icon: 'android-cloud',
-            }
-        ];
+        return new Promise(function (resolve, reject) {
+            // TODO remove timeout
+            setTimeout(() => {
+                var data = [
+                    {
+                        id: 0,
+                        title: 'Actuators',
+                        type: 'actuators',
+                        icon: 'power',
+                    },
+                    {
+                        id: 1,
+                        title: 'Sensors',
+                        type: 'sensors',
+                        icon: 'arrow-graph-up-right',
+                    },
+                ];
+                if (Platform.OS === 'android') {
+                    data.push({
+                        id: 2,
+                        title: 'HUBs',
+                        type: 'hubs',
+                        icon: 'android-cloud',
+                    });
+                }
+                resolve(data);
+            }, 1500);
+        });
     }
 
     getHubsData() {
@@ -177,7 +222,7 @@ class CustomScrollView extends Component {
 
     getItemsArray(data) {
         var items = data.slice();
-        if (items.length > 1) {
+        if (Platform.OS === 'ios' && items.length > 1) {
             var oldLastItem = items[items.length - 1];
             var newFirstItem = Object.assign({}, oldLastItem);
             newFirstItem.id = 'F' + oldLastItem.id;
@@ -207,6 +252,7 @@ class CustomScrollView extends Component {
 
     orientationDidChange(orientation:String) {
         if (this.state.orientation !== orientation) {
+            //noinspection JSSuspiciousNameCombination
             this.setState({
                 width: this.state.height,
                 height: this.state.width,
@@ -215,10 +261,10 @@ class CustomScrollView extends Component {
         }
     }
 
-    makeItems(styles:Array):Array < any > {
+    makeItems(styles:Array):Array<any> {
         var items = [];
         if (!this.state.isLoading) {
-            if (this.state.items && this.state.items.length > 0) {
+            if (this.state.items.length > 0) {
                 this.state.items.forEach(function (item) {
                     var disabled = item.type === 'sensor';
                     items.push(
@@ -246,9 +292,10 @@ class CustomScrollView extends Component {
                             {this.makeInfoItem('No data')}
                         </TouchableOpacity>
                     </View>
-                )
+                );
             }
         } else {
+            // TODO style
             items.push(
                 <View key={'loading'}>
                     <TouchableOpacity
@@ -260,7 +307,7 @@ class CustomScrollView extends Component {
                         {this.makeInfoItem('Loading...')}
                     </TouchableOpacity>
                 </View>
-            )
+            );
         }
 
         return items;
@@ -268,7 +315,14 @@ class CustomScrollView extends Component {
 
     makeItem(item) {
         var title = <Text style={styles.itemTitle}>{item.title}</Text>;
-        if (item.type !== 'sensor') {
+        if (item.type === 'sensor' || item.type === 'hub') {
+            return (
+                <View style={styles.itemContainer}>
+                    {title}
+                    <Text style={styles.itemValue}>{item.value}</Text>
+                </View>
+            );
+        } else if (item.type === 'actuator' || MENU_ITEMS.indexOf(item.type) !== -1) {
             var icon;
             if (item.type === 'actuator') {
                 icon = item.state ? item.iconOn : item.iconOff;
@@ -278,16 +332,11 @@ class CustomScrollView extends Component {
             return (
                 <View style={styles.itemContainer}>
                     {title}
-                    <Icon name={icon} size={150} color='#2980B9'/>
+                    <Icon name={icon} size={150} color="#2980B9"/>
                 </View>
             );
         } else {
-            return (
-                <View style={styles.itemContainer}>
-                    {title}
-                    <Text style={styles.itemValue}>{item.value}</Text>
-                </View>
-            );
+            console.warn(`Unknown item type ${item.type}`);
         }
     }
 
@@ -305,6 +354,10 @@ class CustomScrollView extends Component {
             this.pushToNavigator(item.type);
         } else if (item.type === 'actuator') {
             this.handleActuatorPress(item);
+        } else if (item.type === 'hub') {
+            this.pushToNavigator('menu');
+        } else {
+            console.warn(`Unknown item type ${item.type}`);
         }
     }
 
@@ -312,7 +365,7 @@ class CustomScrollView extends Component {
         this.props.navigator.push(
             {
                 name: 'customScrollView',
-                passProps: {type: type, isLoading: false}
+                passProps: {type: type}
             }
         );
     }

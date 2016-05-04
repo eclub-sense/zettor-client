@@ -8,7 +8,6 @@ var {
     } = React;
 
 var Button = require('../common/button');
-var Error = require('../common/error');
 //var Firebase = require('firebase');
 var s = require('../../styles/style');
 
@@ -74,7 +73,7 @@ module.exports = React.createClass({
     errorMessage: function () {
         if (this.state.errorMessage) {
             return (
-                <Error text={this.state.errorMessage}/>
+                <Text>{this.state.errorMessage}</Text>
             );
         }
     },
