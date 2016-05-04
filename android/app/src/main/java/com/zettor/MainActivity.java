@@ -2,12 +2,13 @@ package com.zettor;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import com.github.yamill.orientation.OrientationPackage;
+import com.facebook.react.ReactActivity;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.github.yamill.orientation.OrientationPackage;
 import co.apptailor.googlesignin.RNGoogleSigninModule;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
-import com.facebook.react.ReactActivity;
 import com.devstepbcn.wifi.AndroidWifiPackage;
-import com.github.yamill.orientation.OrientationPackage;
-import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 
@@ -42,26 +43,26 @@ public class MainActivity extends ReactActivity {
     protected List<ReactPackage> getPackages() {
         return Arrays.<ReactPackage>asList(
             new MainReactPackage(),
-            new AndroidWifiPackage(),
+            new VectorIconsPackage(),
             new OrientationPackage(this),
             new RNGoogleSigninPackage(this),
-            new VectorIconsPackage()
+            new AndroidWifiPackage()
         );
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, android.content.Intent data) {
-    if (requestCode == RNGoogleSigninModule.RC_SIGN_IN) {
-        RNGoogleSigninModule.onActivityResult(data);
-    }
-    super.onActivityResult(requestCode, resultCode, data);
+         if (requestCode == RNGoogleSigninModule.RC_SIGN_IN) {
+            RNGoogleSigninModule.onActivityResult(data);
+         }
+         super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        Intent intent = new Intent("onConfigurationChanged");
-        intent.putExtra("newConfig", newConfig);
-        this.sendBroadcast(intent);
+         super.onConfigurationChanged(newConfig);
+         Intent intent = new Intent("onConfigurationChanged");
+         intent.putExtra("newConfig", newConfig);
+         this.sendBroadcast(intent);
     }
 }
