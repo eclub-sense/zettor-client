@@ -73,7 +73,9 @@ class CustomScrollView extends Component {
     }
 
     render() {
-        if (Platform.OS === 'ios') {
+        if (this.state.isLoading) {
+            return this.loadingItem();
+        } else if (Platform.OS === 'ios') {
             return this.iosScrollView();
         } else if (Platform.OS === 'android') {
             return this.androidScrollView();
@@ -87,7 +89,7 @@ class CustomScrollView extends Component {
             <ViewPagerAndroid
                 style={styles.viewPager}
                 initialPage={0}>
-                {this.makeItems([styles.itemWrapper, {height: this.state.height - 2 * MARGIN}])}
+                {this.makeItems()}
             </ViewPagerAndroid>
         );
     }
@@ -101,15 +103,15 @@ class CustomScrollView extends Component {
                 onMomentumScrollEnd={this.shiftItems.bind(this)}
                 contentOffset={{x:0, y:this.state.contentOffset}}
             >
-                {this.makeItems([styles.itemWrapper, {height: this.state.height - 2 * MARGIN}])}
+                {this.makeItems()}
             </ScrollView>
         );
     }
 
     fetchItems():Array<any> {
+        return new Promise(function (resolve, reject) {
 
-        if (this.props.type === 'menu') {
-            return new Promise(function (resolve, reject) {
+            if (this.props.type === 'menu') {
                 this.getMenuData()
                     .then(function (data) {
                         resolve(this.getItemsArray(data));
@@ -117,11 +119,9 @@ class CustomScrollView extends Component {
                     .catch(function (error) {
                         reject(error);
                     });
-            }.bind(this));
-        }
+            }
 
-        if (this.props.type === 'actuators' || this.props.type === 'sensors') {
-            return new Promise(function (resolve, reject) {
+            if (this.props.type === 'actuators' || this.props.type === 'sensors') {
                 GetEntities()
                     .then(function (entities) {
                         if (entities === null) {
@@ -139,11 +139,9 @@ class CustomScrollView extends Component {
                     .catch(function (error) {
                         reject(error);
                     });
-            }.bind(this));
-        }
+            }
 
-        if (this.props.type === 'hubs') {
-            return new Promise(function (resolve, reject) {
+            if (this.props.type === 'hubs') {
                 if (Platform.OS !== 'android') {
                     reject('Detecting HUBs is available only on Android platform');
                 }
@@ -154,51 +152,46 @@ class CustomScrollView extends Component {
                     .catch(function (error) {
                         reject(error);
                     });
-            }.bind(this));
-        }
+            }
 
-        if (this.props.type === 'login') {
-            return new Promise(function (resolve) {
+            if (this.props.type === 'login') {
                 resolve([]);
-            });
-        }
+            }
 
+        }.bind(this));
     }
 
     getMenuData() {
         return new Promise(function (resolve, reject) {
-            // TODO remove timeout
-            setTimeout(() => {
-                var data = [
-                    {
-                        id: 'actuators',
-                        type: 'actuators',
-                        title: 'Actuators',
-                        icon: 'power',
-                    },
-                    {
-                        id: 'sensors',
-                        type: 'sensors',
-                        title: 'Sensors',
-                        icon: 'arrow-graph-up-right',
-                    },
-                ];
-                if (Platform.OS === 'android') {
-                    data.push({
-                        id: 'hubs',
-                        type: 'hubs',
-                        title: 'HUBs',
-                        icon: 'android-cloud',
-                    });
-                }
+            var data = [
+                {
+                    id: 'actuators',
+                    type: 'actuators',
+                    title: 'Actuators',
+                    icon: 'power',
+                },
+                {
+                    id: 'sensors',
+                    type: 'sensors',
+                    title: 'Sensors',
+                    icon: 'arrow-graph-up-right',
+                },
+            ];
+            if (Platform.OS === 'android') {
                 data.push({
-                    id: 'login',
-                    type: 'login',
-                    title: 'Login',
-                    icon: 'log-in',
+                    id: 'hubs',
+                    type: 'hubs',
+                    title: 'HUBs',
+                    icon: 'android-cloud',
                 });
-                resolve(data);
-            }, 1500);
+            }
+            data.push({
+                id: 'login',
+                type: 'login',
+                title: 'Login',
+                icon: 'log-in',
+            });
+            resolve(data);
         });
     }
 
@@ -275,13 +268,29 @@ class CustomScrollView extends Component {
         }
     }
 
-    makeItems(styles:Array):Array < any > {
+    loadingItem() {
+        return (
+            <View key={'loading'}>
+                <TouchableOpacity
+                    key={'loading'}
+                    style={this.getTouchableOpacityStyle()}
+                    activeOpacity={1}
+                    onPress={null}
+                >
+                    {this.makeInfoItem('Loading...')}
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
+    makeItems() {
+
         if (this.props.type === 'login') {
             return (
                 <View key={'login'}>
                     <TouchableOpacity
                         key={'login'}
-                        style={styles}
+                        style={this.getTouchableOpacityStyle()}
                         activeOpacity={1}
                         onPress={null}
                     >
@@ -291,55 +300,38 @@ class CustomScrollView extends Component {
             );
         }
 
-        var items = [];
-        if (!this.state.isLoading) {
-            if (this.state.items.length > 0) {
-                this.state.items.forEach(function (item) {
-                    var disabled = item.type === 'sensor';
-                    items.push(
-                        <View key={item.id}>
-                            <TouchableOpacity
-                                key={item.id}
-                                style={styles}
-                                activeOpacity={!disabled ? 0.5 : 1}
-                                onPress={!disabled ? this.handleOnPress.bind(this, item) : null}
-                            >
-                                {this.makeItem(item)}
-                            </TouchableOpacity>
-                        </View>
-                    );
-                }.bind(this));
-            } else {
+        if (this.state.items.length > 0) {
+            var items = [];
+            this.state.items.forEach(function (item) {
+                var disabled = item.type === 'sensor';
                 items.push(
-                    <View key={'noData'}>
+                    <View key={item.id}>
                         <TouchableOpacity
-                            key={'noData'}
-                            style={styles}
-                            activeOpacity={1}
-                            onPress={null}
+                            key={item.id}
+                            style={this.getTouchableOpacityStyle()}
+                            activeOpacity={!disabled ? 0.5 : 1}
+                            onPress={!disabled ? this.handleOnPress.bind(this, item) : null}
                         >
-                            {this.makeInfoItem(`No ${this.props.type} found`)}
+                            {this.makeItem(item)}
                         </TouchableOpacity>
                     </View>
                 );
-            }
+            }.bind(this));
+            return items;
         } else {
-            // TODO style
-            items.push(
-                <View key={'loading'}>
+            return (
+                <View key={'noData'}>
                     <TouchableOpacity
-                        key={'loading'}
-                        style={styles}
+                        key={'noData'}
+                        style={this.getTouchableOpacityStyle()}
                         activeOpacity={1}
                         onPress={null}
                     >
-                        {this.makeInfoItem('Loading...')}
+                        {this.makeInfoItem(`No ${this.props.type} found`)}
                     </TouchableOpacity>
                 </View>
             );
         }
-
-        return items;
     }
 
     makeItem(item) {
@@ -490,6 +482,10 @@ class CustomScrollView extends Component {
                 return actions[i].href;
             }
         }
+    }
+
+    getTouchableOpacityStyle() {
+        return [styles.itemWrapper, {height: this.state.height - 2 * MARGIN}];
     }
 }
 
