@@ -20,7 +20,7 @@ var GetEntities = require('../api/getEntities');
 var wifi = require('react-native-android-wifi');
 
 var MARGIN = 40;
-const MENU_ITEMS = ['actuators', 'sensors', 'hubs'];
+const MENU_ITEMS = ['actuators', 'sensors', 'hubs', 'login'];
 const STATE_ON = 'ON';
 //const STATE_OFF = 'OFF';
 const TURN_ON = 'turn-on';
@@ -120,6 +120,28 @@ class CustomScrollView extends Component {
             }.bind(this));
         }
 
+        if (this.props.type === 'actuators' || this.props.type === 'sensors') {
+            return new Promise(function (resolve, reject) {
+                GetEntities()
+                    .then(function (entities) {
+                        if (entities === null) {
+                            resolve([]);
+                        }
+                        var data = [];
+                        if (this.props.type === 'actuators') {
+                            data = this.getActuatorsWithNeededProperties(entities.actuators);
+                            resolve(this.getItemsArray(data));
+                        } else if (this.props.type === 'sensors') {
+                            data = this.getSensorProperties(entities.actuators[0]);
+                            resolve(this.getItemsArray(data));
+                        }
+                    }.bind(this))
+                    .catch(function (error) {
+                        reject(error);
+                    });
+            }.bind(this));
+        }
+
         if (this.props.type === 'hubs') {
             return new Promise(function (resolve, reject) {
                 if (Platform.OS !== 'android') {
@@ -135,26 +157,12 @@ class CustomScrollView extends Component {
             }.bind(this));
         }
 
-        // TODO return new Promise
-        GetEntities()
-            .then((entities) => {
-                if (entities === null) {
-                    this.setState({isLoading: false});
-                }
-                var data = [];
-                if (this.props.type === 'actuators') {
-                    data = this.getActuatorsWithNeededProperties(entities.actuators);
-                    return this.getItemsArray(data);
-                } else if (this.props.type === 'sensors') {
-                    data = this.getSensorProperties(entities.actuators[0]);
-                    return this.getItemsArray(data);
-                }
-            })
-            .catch((error) => {
-                // TODO
-                this.setState({isLoading: false});
-            })
-            .done();
+        if (this.props.type === 'login') {
+            return new Promise(function (resolve) {
+                resolve([]);
+            });
+        }
+
     }
 
     getMenuData() {
@@ -163,26 +171,32 @@ class CustomScrollView extends Component {
             setTimeout(() => {
                 var data = [
                     {
-                        id: 0,
-                        title: 'Actuators',
+                        id: 'actuators',
                         type: 'actuators',
+                        title: 'Actuators',
                         icon: 'power',
                     },
                     {
-                        id: 1,
-                        title: 'Sensors',
+                        id: 'sensors',
                         type: 'sensors',
+                        title: 'Sensors',
                         icon: 'arrow-graph-up-right',
                     },
                 ];
                 if (Platform.OS === 'android') {
                     data.push({
-                        id: 2,
-                        title: 'HUBs',
+                        id: 'hubs',
                         type: 'hubs',
+                        title: 'HUBs',
                         icon: 'android-cloud',
                     });
                 }
+                data.push({
+                    id: 'login',
+                    type: 'login',
+                    title: 'Login',
+                    icon: 'log-in',
+                });
                 resolve(data);
             }, 1500);
         });
@@ -261,7 +275,22 @@ class CustomScrollView extends Component {
         }
     }
 
-    makeItems(styles:Array):Array<any> {
+    makeItems(styles:Array):Array < any > {
+        if (this.props.type === 'login') {
+            return (
+                <View key={'login'}>
+                    <TouchableOpacity
+                        key={'login'}
+                        style={styles}
+                        activeOpacity={1}
+                        onPress={null}
+                    >
+                        {this.makeLoginItem()}
+                    </TouchableOpacity>
+                </View>
+            );
+        }
+
         var items = [];
         if (!this.state.isLoading) {
             if (this.state.items.length > 0) {
@@ -289,7 +318,7 @@ class CustomScrollView extends Component {
                             activeOpacity={1}
                             onPress={null}
                         >
-                            {this.makeInfoItem('No data')}
+                            {this.makeInfoItem(`No ${this.props.type} found`)}
                         </TouchableOpacity>
                     </View>
                 );
@@ -340,8 +369,16 @@ class CustomScrollView extends Component {
         }
     }
 
+    makeLoginItem() {
+        // TODO
+        return (
+            <View style={styles.itemContainer}>
+                <Text style={styles.itemTitle}>Login</Text>
+            </View>
+        );
+    }
+
     makeInfoItem(title) {
-        // TODO style
         return (
             <View style={styles.itemContainer}>
                 <Text style={styles.itemTitle}>{title}</Text>
