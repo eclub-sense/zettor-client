@@ -12,12 +12,19 @@ module.exports = function () {
             var entities = json.entities;
             var selfLinks = getEntitiesSelfLinks(entities);
 
-            return  fetchEntities(selfLinks);
+            return new Promise(function (resolve, reject) {
+                fetchEntities(selfLinks)
+                    .then(function (data) {
+                        resolve(data);
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    });
+            });
         })
         .catch(() => {
             return null;
         });
-        //.done();
 
     function fetchEntities(selfLinks) {
         var allEntities = selfLinks.map(fetchEntity);
@@ -70,7 +77,6 @@ module.exports = function () {
             })
             .catch((error) => {
                 console.warn('fetchEntity', error);
-            })
-            .done();
+            });
     }
 };
