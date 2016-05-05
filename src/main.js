@@ -24,14 +24,14 @@ module.exports = React.createClass({
             <Navigator
                 style={styles.container}
                 initialRoute={
-                {
-                    name: 'customScrollView',
-                    passProps: {
-                        type: 'menu',
-                        isLoading: false,
+                    {
+                        name: 'customScrollView',
+                        passProps: {
+                            type: 'menu',
+                            isLoading: false,
+                        }
                     }
                 }
-            }
                 renderScene={this.renderScene}
                 configureScene={() => {return Navigator.SceneConfigs.FloatFromRight;}}
             />

@@ -2,6 +2,7 @@
 
 var React = require('react-native');
 var {
+    BackAndroid,
     Component,
     Dimensions,
     Platform,
@@ -37,6 +38,13 @@ class CustomScrollView extends Component {
             orientation: '',
             contentOffset: 0,
         };
+        BackAndroid.addEventListener('hardwareBackPress', () => {
+            if (this.props.navigator && this.props.navigator.getCurrentRoutes().length > 1) {
+                this.props.navigator.pop();
+                return true;
+            }
+            return false;
+        });
     }
 
     componentWillMount() {
