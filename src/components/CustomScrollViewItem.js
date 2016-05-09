@@ -9,35 +9,51 @@ var {menuItems} = require('../env');
 class CustomScrollViewItem extends React.Component {
     render() {
         var item = this.props.item;
-        var title = <Text style={styles.itemTitle}>{item.title}</Text>;
+        var title = <Text style={styles.title}>{item.title}</Text>;
 
         if (item.type === 'info') {
             return (
-                <View style={styles.itemContainer}>
-                    <Text style={styles.itemTitle}>{title}</Text>
+                <View style={styles.container}>
+                    <Text style={styles.title}>{title}</Text>
                 </View>
             );
         }
 
         if (item.type === 'sensor' || item.type === 'hub') {
             return (
-                <View style={styles.itemContainer}>
+                <View style={styles.container}>
                     {title}
-                    <Text style={styles.itemValue}>{item.value}</Text>
+                    <Text style={styles.value}>{item.value}</Text>
                 </View>
             );
         }
 
         if (item.type === 'actuator' || menuItems.indexOf(item.type) !== -1) {
             return (
-                <View style={styles.itemContainer}>
-                    {title}
-                    <Icon name={this.getIconName(item)} size={150} color="#2980B9"/>
+                <View style={styles.container}>
+                    <View>
+                        {title}
+                        {this.getSubtitles(item)}
+                    </View>
+                    <View>
+                        <Icon name={this.getIconName(item)} size={150} color="#2980B9"/>
+                    </View>
                 </View>
             );
         }
 
         console.warn(`Unknown item type ${item.type}`);
+    }
+
+    getSubtitles(item) {
+        var subtitles = [];
+        if (item.subtitles !== undefined) {
+            for (var i = 0; i < item.subtitles.length; i++) {
+                subtitles.push(<Text key={i} style={styles.subtitle}>{item.subtitles[i]}</Text>);
+            }
+        }
+
+        return subtitles;
     }
 
     getIconName(item) {
@@ -50,17 +66,22 @@ class CustomScrollViewItem extends React.Component {
 }
 
 var styles = StyleSheet.create({
-    itemContainer: {
+    container: {
         alignItems: 'center',
         justifyContent: 'space-around',
         flex: 1,
     },
-    itemTitle: {
+    subtitle: {
+        fontSize: 15,
+        color: '#2980B9',
+        textAlign: 'center',
+    },
+    title: {
         fontSize: 50,
         color: '#2980B9',
         textAlign: 'center',
     },
-    itemValue: {
+    value: {
         fontSize: 50,
         color: '#2980B9',
         textAlign: 'center',

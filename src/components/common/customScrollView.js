@@ -496,7 +496,9 @@ class CustomScrollView extends Component {
                 this.setState({items: this.getItemsArray(this.getMenuItemsArray())});
             })
             .catch((error) => {
-                console.warn('WRONG SIGNIN', error);
+                if (error.code !== -5) { // user cancels signin process
+                    console.warn('WRONG SIGNIN', error);
+                }
             })
             .done();
     }
