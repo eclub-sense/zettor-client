@@ -23,6 +23,8 @@ import Orientation from 'react-native-orientation';
 var CustomScrollViewItem = require('../CustomScrollViewItem');
 var GetEntities = require('../api/getEntities');
 var {menuItems} = require('../../env');
+var TimerMixin = require('react-timer-mixin');
+var reactMixin = require('react-mixin');
 var wifi = require('react-native-android-wifi');
 
 var MARGIN = 40;
@@ -82,6 +84,7 @@ class CustomScrollView extends Component {
                                     contentOffset: Dimensions.get('window').height,
                                 });
                             }
+                            this.viewPager.setPage(1);
                         }.bind(this),
                         function (error) {
                             console.warn(error);
@@ -113,11 +116,17 @@ class CustomScrollView extends Component {
     androidScrollView() {
         return (
             <ViewPagerAndroid
-                style={styles.viewPager}
-                initialPage={0}>
+                onPageSelected={this.onPageSelected.bind(this)}
+                ref={viewPager => { this.viewPager = viewPager; }}
+                style={styles.viewPager}>
                 {this.makeItems()}
             </ViewPagerAndroid>
         );
+    }
+
+    onPageSelected(event:Object) {
+        var position = event.nativeEvent.position;
+        this.shiftItemsAndroid(position);
     }
 
     iosScrollView() {
@@ -126,7 +135,7 @@ class CustomScrollView extends Component {
                 pagingEnabled={true}
                 showsVerticalScrollIndicator={false}
                 scrollEventThrottle={50}
-                onMomentumScrollEnd={this.shiftItems.bind(this)}
+                onMomentumScrollEnd={this.shiftItemsIOS.bind(this)}
                 contentOffset={{x:0, y:this.state.contentOffset}}
             >
                 {this.makeItems()}
@@ -272,7 +281,7 @@ class CustomScrollView extends Component {
 
     getItemsArray(data) {
         var items = data.slice();
-        if (Platform.OS === 'ios' && items.length > 1) {
+        if (items.length > 1) {
             var oldLastItem = items[items.length - 1];
             var newFirstItem = Object.assign({}, oldLastItem);
             newFirstItem.id = 'F' + oldLastItem.id;
@@ -287,7 +296,7 @@ class CustomScrollView extends Component {
         return items;
     }
 
-    shiftItems(event:Object) {
+    shiftItemsIOS(event:Object) {
         var level = event.nativeEvent.contentOffset.y / this.state.height;
         if (this.state.items.length > 1) {
             if (level === 0) {
@@ -297,6 +306,20 @@ class CustomScrollView extends Component {
             } else {
                 this.setState({contentOffset: event.nativeEvent.contentOffset.y});
             }
+        }
+    }
+
+    shiftItemsAndroid(position) {
+        var numOfItems = this.state.items.length;
+        if (position === 0) {
+            this.setTimeout(() => {
+                this.viewPager.setPageWithoutAnimation(numOfItems - 2);
+            }, 300);
+        }
+        if (position === numOfItems - 1) {
+            this.setTimeout(() => {
+                this.viewPager.setPageWithoutAnimation(1);
+            }, 300);
         }
     }
 
@@ -527,5 +550,7 @@ var styles = StyleSheet.create({
         flex: 1,
     },
 });
+
+reactMixin(CustomScrollView.prototype, TimerMixin);
 
 module.exports = CustomScrollView;
