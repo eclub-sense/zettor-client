@@ -22,12 +22,11 @@ import Orientation from 'react-native-orientation';
 
 var CustomScrollViewItem = require('../CustomScrollViewItem');
 var GetEntities = require('../api/getEntities');
-var {menuItems} = require('../../env');
+var {itemMargin, menuItems} = require('../../env');
 var TimerMixin = require('react-timer-mixin');
 var reactMixin = require('react-mixin');
 var wifi = require('react-native-android-wifi');
 
-var MARGIN = 40;
 const STATE_ON = 'ON';
 const TURN_ON = 'turn-on';
 const TURN_OFF = 'turn-off';
@@ -82,7 +81,7 @@ class CustomScrollView extends Component {
                             if (items.length > 1) {
                                 if (Platform.OS === 'ios') {
                                     this.setState({
-                                        contentOffset: Dimensions.get('window').height,
+                                        contentOffset: this.getInitialContentOffset(),
                                     });
                                 }
                                 if (Platform.OS === 'android') {
@@ -99,6 +98,12 @@ class CustomScrollView extends Component {
                     });
             })
             .done();
+    }
+
+    getInitialContentOffset() {
+        var itemSize = this.state.width - itemMargin;
+
+        return 2 * itemSize - ((this.state.height - itemSize) / 2);
     }
 
     componentWillUnmount() {
@@ -136,7 +141,9 @@ class CustomScrollView extends Component {
     iosScrollView() {
         return (
             <ScrollView
-                pagingEnabled={true}
+                snapToInterval={this.state.width - itemMargin}
+                decelerationRate={0}
+                snapToAlignment="center"
                 showsVerticalScrollIndicator={false}
                 scrollEventThrottle={50}
                 onMomentumScrollEnd={this.shiftItemsIOS.bind(this)}
@@ -284,31 +291,66 @@ class CustomScrollView extends Component {
     }
 
     getItemsArray(data) {
+        var oldFirstItem;
+        var oldLastItem;
+        var newFirstItem;
+        var newLastItem;
         var items = data.slice();
-        if (items.length > 1) {
-            var oldLastItem = items[items.length - 1];
-            var newFirstItem = Object.assign({}, oldLastItem);
-            newFirstItem.id = 'F' + oldLastItem.id;
-            items.unshift(newFirstItem);
 
-            var oldFirstItem = items[1];
-            var newLastItem = Object.assign({}, oldFirstItem);
-            newLastItem.id = 'L' + oldFirstItem.id;
-            items.push(newLastItem);
+        if (items.length > 1) {
+            if (Platform.OS === 'android') {
+                oldLastItem = items[items.length - 1];
+                newFirstItem = Object.assign({}, oldLastItem);
+                newFirstItem.id = 'F' + oldLastItem.id;
+                items.unshift(newFirstItem);
+
+                oldFirstItem = items[1];
+                newLastItem = Object.assign({}, oldFirstItem);
+                newLastItem.id = 'L' + oldFirstItem.id;
+                items.push(newLastItem);
+            }
+
+            if (Platform.OS === 'ios') {
+                oldLastItem = items[items.length - 1];
+                newFirstItem = Object.assign({}, oldLastItem);
+                newFirstItem.id = 'F2' + oldLastItem.id;
+                items.unshift(newFirstItem);
+
+                oldLastItem = items[items.length - 2];
+                newFirstItem = Object.assign({}, oldLastItem);
+                newFirstItem.id = 'F1' + oldLastItem.id;
+                items.unshift(newFirstItem);
+
+                oldFirstItem = items[2];
+                newLastItem = Object.assign({}, oldFirstItem);
+                newLastItem.id = 'L1' + oldFirstItem.id;
+                items.push(newLastItem);
+
+                oldFirstItem = items[3];
+                newLastItem = Object.assign({}, oldFirstItem);
+                newLastItem.id = 'L2' + oldFirstItem.id;
+                items.push(newLastItem);
+            }
         }
 
         return items;
     }
 
     shiftItemsIOS(event:Object) {
-        var level = event.nativeEvent.contentOffset.y / this.state.height;
-        if (this.state.items.length > 1) {
-            if (level === 0) {
-                this.setState({contentOffset: this.state.height * (this.state.items.length - 2)});
-            } else if (level === this.state.items.length - 1) {
-                this.setState({contentOffset: this.state.height});
+        var width = this.state.width;
+        var itemSize = width - itemMargin;
+        var startPosition = itemSize - ((this.state.height - itemSize) / 2);
+        var contentOffsetY = event.nativeEvent.contentOffset.y;
+        var numOfItems = this.state.items.length;
+        var isLast = (contentOffsetY - startPosition) / (width - itemMargin) === numOfItems - 4;
+
+        if (numOfItems > 1) {
+            if (contentOffsetY === startPosition) {
+                this.setState({contentOffset: (width - itemMargin) * (numOfItems - 4) + startPosition});
+            } else if (isLast) {
+                this.setState({contentOffset: startPosition});
             } else {
-                this.setState({contentOffset: event.nativeEvent.contentOffset.y});
+                this.setState({contentOffset: contentOffsetY});
             }
         }
     }
@@ -509,7 +551,8 @@ class CustomScrollView extends Component {
     }
 
     getTouchableOpacityStyle() {
-        return [styles.itemWrapper, {height: this.state.height - 2 * MARGIN}];
+        var height = this.state.width - 2 * itemMargin;
+        return [styles.itemWrapper, {height: height}];
     }
 
     logIn() {
@@ -547,7 +590,10 @@ var styles = StyleSheet.create({
     itemWrapper: {
         borderRadius: 5,
         padding: 10,
-        margin: MARGIN,
+        marginTop: itemMargin / 2,
+        marginBottom: itemMargin / 2,
+        marginLeft: itemMargin,
+        marginRight: itemMargin,
         backgroundColor: '#ECF0F1',
     },
     viewPager: {
