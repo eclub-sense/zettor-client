@@ -1,5 +1,9 @@
 'use strict';
 
+var config = require('../../../config.json');
+var iosClientId = config.iosClientId;
+var webClientId = config.webClientId;
+
 var React = require('react-native');
 var {
     BackAndroid,
@@ -8,24 +12,24 @@ var {
     Platform,
     ScrollView,
     StyleSheet,
-    Text,
     TouchableOpacity,
     View,
     ViewPagerAndroid,
     } = React;
 
-import Icon from 'react-native-vector-icons/Ionicons';
+import {GoogleSignin} from 'react-native-google-signin';
 import Orientation from 'react-native-orientation';
 
+var CustomScrollViewItem = require('../CustomScrollViewItem');
 var GetEntities = require('../api/getEntities');
+var {menuItems} = require('../../env');
 var wifi = require('react-native-android-wifi');
 
 var MARGIN = 40;
-const MENU_ITEMS = ['actuators', 'sensors', 'hubs', 'login'];
 const STATE_ON = 'ON';
-//const STATE_OFF = 'OFF';
 const TURN_ON = 'turn-on';
 const TURN_OFF = 'turn-off';
+const ACTIVE_OPACITY = 0.5;
 
 class CustomScrollView extends Component {
     constructor(props) {
@@ -37,6 +41,7 @@ class CustomScrollView extends Component {
             height: -1,
             orientation: '',
             contentOffset: 0,
+            user: null,
         };
         BackAndroid.addEventListener('hardwareBackPress', () => {
             if (this.props.navigator && this.props.navigator.getCurrentRoutes().length > 1) {
@@ -56,24 +61,38 @@ class CustomScrollView extends Component {
     }
 
     componentDidMount() {
-        Orientation.addOrientationListener(this.orientationDidChange.bind(this));
-        this.fetchItems()
-            .then(
-                function (items) {
-                    this.setState({items: items, isLoading: false});
-                    if (Platform.OS === 'ios' && items.length > 1) {
-                        this.setState({
-                            contentOffset: Dimensions.get('window').height,
-                        });
-                    }
-                }.bind(this),
-                function (error) {
-                    console.warn(error);
-                }
-            )
-            .catch((error) => {
-                console.warn(error);
-            });
+
+        GoogleSignin.configure({
+            iosClientId: iosClientId,
+            webClientId: webClientId,
+            offlineAccess: true,
+        });
+
+        GoogleSignin.currentUserAsync()
+            .then((user) => {
+                this.setState({user: user});
+            })
+            .then(()=> {
+                Orientation.addOrientationListener(this.orientationDidChange.bind(this));
+                this.fetchItems()
+                    .then(
+                        function (items) {
+                            this.setState({items: items, isLoading: false});
+                            if (Platform.OS === 'ios' && items.length > 1) {
+                                this.setState({
+                                    contentOffset: Dimensions.get('window').height,
+                                });
+                            }
+                        }.bind(this),
+                        function (error) {
+                            console.warn(error);
+                        }
+                    )
+                    .catch((error) => {
+                        console.warn(error);
+                    });
+            })
+            .done();
     }
 
     componentWillUnmount() {
@@ -162,7 +181,7 @@ class CustomScrollView extends Component {
                     });
             }
 
-            if (this.props.type === 'login') {
+            if (this.props.type === 'login' || this.props.type === 'logout') {
                 resolve([]);
             }
 
@@ -171,36 +190,53 @@ class CustomScrollView extends Component {
 
     getMenuData() {
         return new Promise(function (resolve, reject) {
-            var data = [
-                {
-                    id: 'actuators',
-                    type: 'actuators',
-                    title: 'Actuators',
-                    icon: 'power',
-                },
-                {
-                    id: 'sensors',
-                    type: 'sensors',
-                    title: 'Sensors',
-                    icon: 'arrow-graph-up-right',
-                },
-            ];
-            if (Platform.OS === 'android') {
-                data.push({
-                    id: 'hubs',
-                    type: 'hubs',
-                    title: 'HUBs',
-                    icon: 'android-cloud',
-                });
-            }
-            data.push({
+            var data = this.getMenuItemsArray();
+            resolve(data);
+        }.bind(this));
+    }
+
+    getMenuItemsArray() {
+        var menuItemsArray = [
+            {
+                id: 'actuators',
+                type: 'actuators',
+                title: 'Actuators',
+                icon: 'power',
+            },
+            {
+                id: 'sensors',
+                type: 'sensors',
+                title: 'Sensors',
+                icon: 'arrow-graph-up-right',
+            },
+        ];
+        if (Platform.OS === 'android') {
+            menuItemsArray.push({
+                id: 'hubs',
+                type: 'hubs',
+                title: 'HUBs',
+                icon: 'android-cloud',
+            });
+        }
+        if (!this.state.user) {
+            menuItemsArray.push({
                 id: 'login',
                 type: 'login',
                 title: 'Login',
+                subtitles: ['via Google'],
                 icon: 'log-in',
             });
-            resolve(data);
-        });
+        } else {
+            menuItemsArray.push({
+                id: 'logout',
+                type: 'logout',
+                title: 'Logout',
+                subtitles: [this.state.user.name, this.state.user.email],
+                icon: 'log-out',
+            });
+        }
+
+        return menuItemsArray;
     }
 
     getHubsData() {
@@ -293,21 +329,6 @@ class CustomScrollView extends Component {
 
     makeItems() {
 
-        if (this.props.type === 'login') {
-            return (
-                <View key={'login'}>
-                    <TouchableOpacity
-                        key={'login'}
-                        style={this.getTouchableOpacityStyle()}
-                        activeOpacity={1}
-                        onPress={null}
-                    >
-                        {this.makeLoginItem()}
-                    </TouchableOpacity>
-                </View>
-            );
-        }
-
         if (this.state.items.length > 0) {
             var items = [];
             this.state.items.forEach(function (item) {
@@ -317,10 +338,10 @@ class CustomScrollView extends Component {
                         <TouchableOpacity
                             key={item.id}
                             style={this.getTouchableOpacityStyle()}
-                            activeOpacity={!disabled ? 0.5 : 1}
+                            activeOpacity={!disabled ? ACTIVE_OPACITY : 1}
                             onPress={!disabled ? this.handleOnPress.bind(this, item) : null}
                         >
-                            {this.makeItem(item)}
+                            <CustomScrollViewItem item={item}/>
                         </TouchableOpacity>
                     </View>
                 );
@@ -342,53 +363,23 @@ class CustomScrollView extends Component {
         }
     }
 
-    makeItem(item) {
-        var title = <Text style={styles.itemTitle}>{item.title}</Text>;
-        if (item.type === 'sensor' || item.type === 'hub') {
-            return (
-                <View style={styles.itemContainer}>
-                    {title}
-                    <Text style={styles.itemValue}>{item.value}</Text>
-                </View>
-            );
-        } else if (item.type === 'actuator' || MENU_ITEMS.indexOf(item.type) !== -1) {
-            var icon;
-            if (item.type === 'actuator') {
-                icon = item.state ? item.iconOn : item.iconOff;
-            } else {
-                icon = item.icon;
-            }
-            return (
-                <View style={styles.itemContainer}>
-                    {title}
-                    <Icon name={icon} size={150} color="#2980B9"/>
-                </View>
-            );
-        } else {
-            console.warn(`Unknown item type ${item.type}`);
-        }
-    }
-
-    makeLoginItem() {
-        // TODO
-        return (
-            <View style={styles.itemContainer}>
-                <Text style={styles.itemTitle}>Login</Text>
-            </View>
-        );
-    }
-
     makeInfoItem(title) {
+        var item = {type: 'info', title: title};
+
         return (
-            <View style={styles.itemContainer}>
-                <Text style={styles.itemTitle}>{title}</Text>
-            </View>
+            <CustomScrollViewItem item={item}/>
         );
     }
 
     handleOnPress(item) {
-        if (MENU_ITEMS.indexOf(item.type) !== -1) {
-            this.pushToNavigator(item.type);
+        if (menuItems.indexOf(item.type) !== -1) {
+            if (item.type === 'login') {
+                this.logIn();
+            } else if (item.type === 'logout') {
+                this.logOut();
+            } else {
+                this.pushToNavigator(item.type);
+            }
         } else if (item.type === 'actuator') {
             this.handleActuatorPress(item);
         } else if (item.type === 'hub') {
@@ -495,25 +486,37 @@ class CustomScrollView extends Component {
     getTouchableOpacityStyle() {
         return [styles.itemWrapper, {height: this.state.height - 2 * MARGIN}];
     }
+
+    logIn() {
+        GoogleSignin.signIn()
+            .then((user) => {
+                this.setState({user: user});
+            })
+            .then(()=> {
+                this.setState({items: this.getItemsArray(this.getMenuItemsArray())});
+            })
+            .catch((error) => {
+                console.warn('WRONG SIGNIN', error);
+            })
+            .done();
+    }
+
+    logOut() {
+        GoogleSignin.revokeAccess()
+            .then(() => {
+                GoogleSignin.signOut();
+            })
+            .then(() => {
+                this.setState({user: null});
+            })
+            .then(()=> {
+                this.setState({items: this.getItemsArray(this.getMenuItemsArray())});
+            })
+            .done();
+    }
 }
 
 var styles = StyleSheet.create({
-    itemContainer: {
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        flex: 1,
-    },
-    itemTitle: {
-        fontSize: 50,
-        color: '#2980B9',
-        textAlign: 'center',
-    },
-    itemValue: {
-        fontSize: 50,
-        color: '#2980B9',
-        textAlign: 'center',
-        fontWeight: 'bold',
-    },
     itemWrapper: {
         borderRadius: 5,
         padding: 10,

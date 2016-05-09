@@ -9,13 +9,11 @@ var {
 var CustomScrollView = require('./components/common/customScrollView');
 var SignIn = require('./components/authentication/signIn');
 var SignUp = require('./components/authentication/signUp');
-var googleSignInExample = require('./components/authentication/googleSignInExample');
 
 var ROUTES = {
     customScrollView: CustomScrollView,
     signIn: SignIn,
     signUp: SignUp,
-    googleSignInExample: googleSignInExample,
 };
 
 module.exports = React.createClass({
