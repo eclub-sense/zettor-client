@@ -61,7 +61,6 @@ class CustomScrollView extends Component {
     }
 
     componentDidMount() {
-
         GoogleSignin.configure({
             iosClientId: iosClientId,
             webClientId: webClientId,
@@ -328,7 +327,6 @@ class CustomScrollView extends Component {
     }
 
     makeItems() {
-
         if (this.state.items.length > 0) {
             var items = [];
             this.state.items.forEach(function (item) {
@@ -496,7 +494,7 @@ class CustomScrollView extends Component {
                 this.setState({items: this.getItemsArray(this.getMenuItemsArray())});
             })
             .catch((error) => {
-                if (error.code !== -5) { // user cancels signin process
+                if (error.code !== -5) { // user doesn't cancel signin process
                     console.warn('WRONG SIGNIN', error);
                 }
             })
