@@ -79,12 +79,16 @@ class CustomScrollView extends Component {
                     .then(
                         function (items) {
                             this.setState({items: items, isLoading: false});
-                            if (Platform.OS === 'ios' && items.length > 1) {
-                                this.setState({
-                                    contentOffset: Dimensions.get('window').height,
-                                });
+                            if (items.length > 1) {
+                                if (Platform.OS === 'ios') {
+                                    this.setState({
+                                        contentOffset: Dimensions.get('window').height,
+                                    });
+                                }
+                                if (Platform.OS === 'android') {
+                                    this.viewPager.setPage(1);
+                                }
                             }
-                            this.viewPager.setPage(1);
                         }.bind(this),
                         function (error) {
                             console.warn(error);
