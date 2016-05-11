@@ -8,6 +8,7 @@ var React = require('react-native');
 var {
     BackAndroid,
     Component,
+    DeviceEventEmitter,
     Dimensions,
     Platform,
     ScrollView,
@@ -20,17 +21,28 @@ var {
 import {GoogleSignin} from 'react-native-google-signin';
 import Orientation from 'react-native-orientation';
 
+var BackgroundTimer = require('react-native-background-timer');
 var CustomScrollViewItem = require('../CustomScrollViewItem');
+var {itemMargin, menuItems, networksCheckDelay} = require('../../env');
 var GetEntities = require('../api/getEntities');
-var {itemMargin, menuItems} = require('../../env');
-var TimerMixin = require('react-timer-mixin');
+var PushNotification = require('react-native-push-notification');
 var reactMixin = require('react-mixin');
+var TimerMixin = require('react-timer-mixin');
 var wifi = require('react-native-android-wifi');
 
 const STATE_ON = 'ON';
 const TURN_ON = 'turn-on';
 const TURN_OFF = 'turn-off';
 const ACTIVE_OPACITY = 0.5;
+
+if (Platform.OS === 'android') {
+    PushNotification.configure({
+        onNotification: function (notification) {
+            console.log('NOTIFICATION:', notification);
+            // TODO
+        },
+    });
+}
 
 class CustomScrollView extends Component {
     constructor(props) {
@@ -54,6 +66,13 @@ class CustomScrollView extends Component {
     }
 
     componentWillMount() {
+        if (Platform.OS === 'android') {
+            BackgroundTimer.start(networksCheckDelay);
+            DeviceEventEmitter.addListener('backgroundTimer', () => {
+                this.checkNetworks();
+            });
+        }
+
         this.setState({
             width: Dimensions.get('window').width,
             height: Dimensions.get('window').height,
@@ -111,14 +130,20 @@ class CustomScrollView extends Component {
     }
 
     render() {
+        if (Platform.OS === 'android' && this.state.orientation === 'PORTRAIT') {
+            return this.infoItem('Rotate your device into landscape');
+        }
+        if (Platform.OS === 'ios' && this.state.orientation === 'LANDSCAPE') {
+            return this.infoItem('Rotate your device into portrait');
+        }
         if (this.state.isLoading) {
-            return this.loadingItem();
-        } else if (Platform.OS === 'ios') {
+            return this.infoItem('Loading...');
+        }
+        if (Platform.OS === 'ios') {
             return this.iosScrollView();
-        } else if (Platform.OS === 'android') {
+        }
+        if (Platform.OS === 'android') {
             return this.androidScrollView();
-        } else {
-            console.warn(`Unknown platform ${Platform.OS}`);
         }
     }
 
@@ -380,16 +405,16 @@ class CustomScrollView extends Component {
         }
     }
 
-    loadingItem() {
+    infoItem(text) {
         return (
-            <View key={'loading'}>
+            <View key={'info'}>
                 <TouchableOpacity
-                    key={'loading'}
+                    key={'info'}
                     style={this.getTouchableOpacityStyle()}
                     activeOpacity={1}
                     onPress={null}
                 >
-                    {this.makeInfoItem('Loading...')}
+                    {this.makeInfoItem(text)}
                 </TouchableOpacity>
             </View>
         );
@@ -551,8 +576,21 @@ class CustomScrollView extends Component {
     }
 
     getTouchableOpacityStyle() {
-        var height = this.state.width - 2 * itemMargin;
-        return [styles.itemWrapper, {height: height}];
+        var style = [styles.itemWrapper];
+
+        var height;
+        if (Platform.OS === 'ios') {
+            height = this.state.width - 2 * itemMargin;
+            if (this.state.items.length < 2) {
+                style.push({marginTop: itemMargin + (this.state.height - this.state.width) / 2});
+            }
+        }
+        if (Platform.OS === 'android') {
+            height = this.state.height - 2 * itemMargin;
+        }
+        style.push({height: height});
+
+        return style;
     }
 
     logIn() {
@@ -583,6 +621,14 @@ class CustomScrollView extends Component {
                 this.setState({items: this.getItemsArray(this.getMenuItemsArray())});
             })
             .done();
+    }
+
+    checkNetworks() {
+        console.log('tic');
+        //PushNotification.localNotification({
+        //    title: 'Zettor HUB Detected',
+        //    message: 'HUB Name', // TODO add name
+        //});
     }
 }
 

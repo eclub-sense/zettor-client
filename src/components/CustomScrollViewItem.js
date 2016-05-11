@@ -36,7 +36,7 @@ class CustomScrollViewItem extends React.Component {
                         {this.getSubtitles(item)}
                     </View>
                     <View>
-                        <Icon name={this.getIconName(item)} size={150} color="#2980B9"/>
+                        <Icon name={this.getIconName(item)} size={120} color="#2980B9"/>
                     </View>
                 </View>
             );
