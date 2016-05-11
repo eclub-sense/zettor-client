@@ -35,15 +35,6 @@ const TURN_ON = 'turn-on';
 const TURN_OFF = 'turn-off';
 const ACTIVE_OPACITY = 0.5;
 
-if (Platform.OS === 'android') {
-    PushNotification.configure({
-        onNotification: function (notification) {
-            console.log('NOTIFICATION:', notification);
-            // TODO
-        },
-    });
-}
-
 class CustomScrollView extends Component {
     constructor(props) {
         super(props);
@@ -55,7 +46,8 @@ class CustomScrollView extends Component {
             orientation: '',
             contentOffset: 0,
             user: null,
-            connectedHubUrl: null,
+            connectedHub: this.props.connectedHub,
+            listeningForBackgroundTimer: this.props.listeningForBackgroundTimer,
         };
         BackAndroid.addEventListener('hardwareBackPress', () => {
             if (this.props.navigator && this.props.navigator.getCurrentRoutes().length > 1) {
@@ -67,10 +59,11 @@ class CustomScrollView extends Component {
     }
 
     componentWillMount() {
-        if (Platform.OS === 'android') {
+        if (!this.state.listeningForBackgroundTimer && Platform.OS === 'android') {
             BackgroundTimer.start(networksCheckDelay);
+            this.setState({listeningForBackgroundTimer: true});
             DeviceEventEmitter.addListener('backgroundTimer', () => {
-                this.checkNetworks();
+                this.checkHubs();
             });
         }
 
@@ -88,13 +81,20 @@ class CustomScrollView extends Component {
             offlineAccess: true,
         });
 
+        if (Platform.OS === 'android') {
+            PushNotification.configure({
+                onNotification: function (notification) {
+                    this.onNotificationPress(notification);
+                }.bind(this),
+            });
+        }
+
         GoogleSignin.currentUserAsync()
             .then((user) => {
                 this.setState({user: user});
             })
             .then(()=> {
                 Orientation.addOrientationListener(this.orientationDidChange.bind(this));
-                this.state.connectedHubUrl = this.props.connectedHubUrl;
                 this.fetchItems()
                     .then(
                         function (items) {
@@ -119,6 +119,14 @@ class CustomScrollView extends Component {
                     });
             })
             .done();
+    }
+
+    onNotificationPress(notification) {
+        console.log('NOTIFICATION:', notification);
+        // TODO
+        // navigator.push screen with:
+        // Title: HUB Detected, Subtitle: HUB title and 3 buttons:
+        // Connect to this hub, Stay connected to XXX, Connect to other hub
     }
 
     getInitialContentOffset() {
@@ -187,7 +195,7 @@ class CustomScrollView extends Component {
             if (this.props.type === 'menu' &&
                 (
                     Platform.OS === 'ios' ||
-                    (Platform.OS === 'android' && this.state.connectedHubUrl != null)
+                    (Platform.OS === 'android' && this.state.connectedHub != null)
                 )
             ) {
                 this.getMenuData()
@@ -200,7 +208,7 @@ class CustomScrollView extends Component {
             }
 
             if (this.props.type === 'hubs' && Platform.OS === 'ios' ||
-                (Platform.OS === 'android' && this.state.connectedHubUrl == null)
+                (Platform.OS === 'android' && this.state.connectedHub == null)
             ) {
                 if (Platform.OS !== 'android') {
                     reject('Detecting HUBs is available only on Android platform');
@@ -215,7 +223,7 @@ class CustomScrollView extends Component {
             }
 
             if (this.props.type === 'actuators' || this.props.type === 'sensors') {
-                GetEntities(this.state.connectedHubUrl)
+                GetEntities(this.state.connectedHub.url)
                     .then(function (entities) {
                         if (entities === null) {
                             resolve([]);
@@ -484,10 +492,19 @@ class CustomScrollView extends Component {
         } else if (item.type === 'actuator') {
             this.handleActuatorPress(item);
         } else if (item.type === 'hub') {
-            this.setState({connectedHubUrl: this.getHubUrl(item.bssid)});
+            this.setState({
+                connectedHub: {
+                    url: this.getHubUrl(item.bssid),
+                    bssid: item.bssid
+                }
+            });
             this.props.navigator.immediatelyResetRouteStack([{
                 name: 'customScrollView',
-                passProps: {type: 'menu', connectedHubUrl: this.state.connectedHubUrl}
+                passProps: {
+                    type: 'menu',
+                    connectedHub: this.state.connectedHub,
+                    listeningForBackgroundTimer: this.state.listeningForBackgroundTimer,
+                }
             }]);
         } else {
             console.warn(`Unknown item type ${item.type}`);
@@ -498,13 +515,18 @@ class CustomScrollView extends Component {
         this.props.navigator.push(
             {
                 name: 'customScrollView',
-                passProps: {type: type, connectedHubUrl: this.state.connectedHubUrl},
+                passProps: {
+                    type: type,
+                    connectedHub: this.state.connectedHub,
+                    listeningForBackgroundTimer: this.state.listeningForBackgroundTimer,
+                },
             }
         );
     }
 
+    //noinspection JSUnusedLocalSymbols
     getHubUrl(bssid) {
-        // TODO get HUB url from API by BSSID
+        // TODO get HUB url by BSSID (API needed)
         return config.serverUrl;
     }
 
@@ -641,12 +663,27 @@ class CustomScrollView extends Component {
             .done();
     }
 
-    checkNetworks() {
-        console.log('tic');
-        //PushNotification.localNotification({
-        //    title: 'Zettor HUB Detected',
-        //    message: 'HUB Name', // TODO add name
-        //});
+    checkHubs() {
+        if (this.state.connectedHub != null) {
+            this.getHubsData()
+                .then(function (data) {
+                    if (data.length > 0) {
+                        var hubWithTheBestSignal = data[0];
+                        var hubWithTheBestSignalBssid = hubWithTheBestSignal.bssid;
+                        if (hubWithTheBestSignalBssid !== this.state.connectedHub.bssid) {
+                            // TODO and hubWithTheBestSignalBssid !== ignoredHubBssid
+                            PushNotification.localNotification({
+                                title: 'Zettor HUB Detected',
+                                message: hubWithTheBestSignal.title,
+                                data: hubWithTheBestSignalBssid,
+                            });
+                        }
+                    }
+                }.bind(this))
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
     }
 }
 
