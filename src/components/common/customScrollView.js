@@ -23,7 +23,7 @@ import Orientation from 'react-native-orientation';
 
 var BackgroundTimer = require('react-native-background-timer');
 var CustomScrollViewItem = require('../CustomScrollViewItem');
-var {itemMargin, menuItems, networksCheckDelay} = require('../../env');
+var {itemMargin, mainItems, networksCheckDelay} = require('../../env');
 var GetEntities = require('../api/getEntities');
 var PushNotification = require('react-native-push-notification');
 var reactMixin = require('react-mixin');
@@ -122,11 +122,12 @@ class CustomScrollView extends Component {
     }
 
     onNotificationPress(notification) {
-        console.log('NOTIFICATION:', notification);
-        // TODO
-        // navigator.push screen with:
-        // Title: HUB Detected, Subtitle: HUB title and 3 buttons:
-        // Connect to this hub, Stay connected to XXX, Connect to other hub
+        var data = {
+            detectedHubTitle: notification.message,
+            detectedHubBssid: notification.data,
+            connectedHubTitle: this.state.connectedHub.title,
+        };
+        this.pushToNavigator('hubDetected', data);
     }
 
     getInitialContentOffset() {
@@ -220,6 +221,17 @@ class CustomScrollView extends Component {
                     .catch(function (error) {
                         reject(error);
                     });
+            }
+
+            if (this.props.type === 'hubDetected') {
+                resolve([{
+                    id: 'hubDetected',
+                    type: 'hubDetected',
+                    title: 'HUB Detected',
+                    subtitles: [this.props.data.detectedHubTitle],
+                    bssid: this.props.data.detectedHubBssid,
+                    connectedHubTitle: this.props.data.connectedHubTitle,
+                }]);
             }
 
             if (this.props.type === 'actuators' || this.props.type === 'sensors') {
@@ -441,7 +453,7 @@ class CustomScrollView extends Component {
         if (this.state.items.length > 0) {
             var items = [];
             this.state.items.forEach(function (item) {
-                var disabled = item.type === 'sensor';
+                var disabled = item.type === 'sensor' || item.type === 'hubDetected';
                 items.push(
                     <View key={item.id}>
                         <TouchableOpacity
@@ -481,7 +493,7 @@ class CustomScrollView extends Component {
     }
 
     handleOnPress(item) {
-        if (menuItems.indexOf(item.type) !== -1) {
+        if (mainItems.indexOf(item.type) !== -1) {
             if (item.type === 'login') {
                 this.logIn();
             } else if (item.type === 'logout') {
@@ -494,8 +506,9 @@ class CustomScrollView extends Component {
         } else if (item.type === 'hub') {
             this.setState({
                 connectedHub: {
+                    title: item.title,
                     url: this.getHubUrl(item.bssid),
-                    bssid: item.bssid
+                    bssid: item.bssid,
                 }
             });
             this.props.navigator.immediatelyResetRouteStack([{
@@ -511,12 +524,13 @@ class CustomScrollView extends Component {
         }
     }
 
-    pushToNavigator(type) {
+    pushToNavigator(type, data) {
         this.props.navigator.push(
             {
                 name: 'customScrollView',
                 passProps: {
                     type: type,
+                    data: data,
                     connectedHub: this.state.connectedHub,
                     listeningForBackgroundTimer: this.state.listeningForBackgroundTimer,
                 },

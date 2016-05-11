@@ -2,6 +2,6 @@
 
 module.exports = {
     itemMargin: 50,
-    menuItems: ['actuators', 'sensors', 'hubs', 'login', 'logout'],
+    mainItems: ['actuators', 'sensors', 'hubs', 'hubDetected', 'login', 'logout'],
     networksCheckDelay: 5000,
 };

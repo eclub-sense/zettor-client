@@ -6,7 +6,7 @@ var {
     TouchableHighlight,
     } = React;
 
-var s = require('../../styles/style');
+var s = require('../styles/style');
 
 module.exports = React.createClass({
     render: function () {

@@ -7,7 +7,7 @@ var {
     View,
     } = React;
 
-var Button = require('../common/button');
+var Button = require('../button');
 //var Firebase = require('firebase');
 var s = require('../../styles/style');
 

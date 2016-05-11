@@ -4,7 +4,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
-var {menuItems} = require('../env');
+var Button = require('./button');
+var {mainItems} = require('../env');
 
 class CustomScrollViewItem extends React.Component {
     render() {
@@ -28,7 +29,19 @@ class CustomScrollViewItem extends React.Component {
             );
         }
 
-        if (item.type === 'actuator' || menuItems.indexOf(item.type) !== -1) {
+        if (item.type === 'hubDetected') {
+            return (
+                <View style={styles.container}>
+                    {title}
+                    {this.getSubtitles(item)}
+                    <Button text={'Connect to this HUB'} onPress={this.onButtonPress}/>
+                    <Button text={`Stay connected to ${item.connectedHubTitle}`} onPress={this.onButtonPress}/>
+                    <Button text={'Connect to other HUB'} onPress={this.onButtonPress}/>
+                </View>
+            );
+        }
+
+        if (item.type === 'actuator' || mainItems.indexOf(item.type) !== -1) {
             return (
                 <View style={styles.container}>
                     <View>
@@ -62,6 +75,10 @@ class CustomScrollViewItem extends React.Component {
         } else {
             return item.icon;
         }
+    }
+
+    onButtonPress() {
+        console.log('button pressed');
     }
 }
 
