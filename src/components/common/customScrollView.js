@@ -103,7 +103,7 @@ class CustomScrollView extends Component {
                                         contentOffset: this.getInitialContentOffset(),
                                     });
                                 }
-                                if (Platform.OS === 'android') {
+                                if (Platform.OS === 'android' && this.state.orientation === 'LANDSCAPE') {
                                     this.viewPager.setPage(1);
                                 }
                             }
