@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
-var Button = require('./button');
+var Button = require('./Button');
 var {mainItems} = require('../env');
 
 class CustomScrollViewItem extends React.Component {

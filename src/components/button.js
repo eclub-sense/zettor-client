@@ -1,23 +1,35 @@
 'use strict';
 
-var React = require('react-native');
-var {
-    Text,
-    TouchableHighlight,
-    } = React;
+import React from 'react';
+import {StyleSheet, Text, TouchableHighlight} from 'react-native';
 
-var s = require('../styles/style');
-
-module.exports = React.createClass({
-    render: function () {
+class Button extends React.Component {
+    render() {
         return (
             <TouchableHighlight
-                style={[s.button, s.bcDarkGrey]}
+                style={styles.button}
                 underlayColor={'#8D99AE'}
                 onPress={this.props.onPress}
             >
-                <Text style={s.buttonText}>{this.props.text}</Text>
+                <Text style={styles.buttonText}>{this.props.text}</Text>
             </TouchableHighlight>
         );
     }
+}
+
+var styles = StyleSheet.create({
+    button: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1,
+        padding: 5,
+        marginTop: 10,
+    },
+    buttonText: {
+        flex: 1,
+        alignSelf: 'center',
+        fontSize: 10,
+    },
 });
+
+module.exports = Button;
