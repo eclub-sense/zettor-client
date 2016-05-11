@@ -1,10 +1,7 @@
 'use strict';
 
-var config = require('../../../config.json');
-var serverUrl = config.serverUrl;
-
-module.exports = function () {
-    return fetch(serverUrl)
+module.exports = function (connectedHubUrl) {
+    return fetch(connectedHubUrl)
         .then(function (response) {
             return response.json();
         })

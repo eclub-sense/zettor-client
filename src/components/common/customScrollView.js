@@ -55,6 +55,7 @@ class CustomScrollView extends Component {
             orientation: '',
             contentOffset: 0,
             user: null,
+            connectedHubUrl: null,
         };
         BackAndroid.addEventListener('hardwareBackPress', () => {
             if (this.props.navigator && this.props.navigator.getCurrentRoutes().length > 1) {
@@ -93,6 +94,7 @@ class CustomScrollView extends Component {
             })
             .then(()=> {
                 Orientation.addOrientationListener(this.orientationDidChange.bind(this));
+                this.state.connectedHubUrl = this.props.connectedHubUrl;
                 this.fetchItems()
                     .then(
                         function (items) {
@@ -130,12 +132,12 @@ class CustomScrollView extends Component {
     }
 
     render() {
-        if (Platform.OS === 'android' && this.state.orientation === 'PORTRAIT') {
-            return this.infoItem('Rotate your device into landscape');
-        }
-        if (Platform.OS === 'ios' && this.state.orientation === 'LANDSCAPE') {
-            return this.infoItem('Rotate your device into portrait');
-        }
+        //if (Platform.OS === 'android' && this.state.orientation === 'PORTRAIT') {
+        //    return this.infoItem('Rotate your device into landscape');
+        //}
+        //if (Platform.OS === 'ios' && this.state.orientation === 'LANDSCAPE') {
+        //    return this.infoItem('Rotate your device into portrait');
+        //}
         if (this.state.isLoading) {
             return this.infoItem('Loading...');
         }
@@ -182,7 +184,12 @@ class CustomScrollView extends Component {
     fetchItems():Array<any> {
         return new Promise(function (resolve, reject) {
 
-            if (this.props.type === 'menu') {
+            if (this.props.type === 'menu' &&
+                (
+                    Platform.OS === 'ios' ||
+                    (Platform.OS === 'android' && this.state.connectedHubUrl != null)
+                )
+            ) {
                 this.getMenuData()
                     .then(function (data) {
                         resolve(this.getItemsArray(data));
@@ -192,8 +199,23 @@ class CustomScrollView extends Component {
                     });
             }
 
+            if (this.props.type === 'hubs' && Platform.OS === 'ios' ||
+                (Platform.OS === 'android' && this.state.connectedHubUrl == null)
+            ) {
+                if (Platform.OS !== 'android') {
+                    reject('Detecting HUBs is available only on Android platform');
+                }
+                this.getHubsData()
+                    .then(function (data) {
+                        resolve(this.getItemsArray(data));
+                    }.bind(this))
+                    .catch(function (error) {
+                        reject(error);
+                    });
+            }
+
             if (this.props.type === 'actuators' || this.props.type === 'sensors') {
-                GetEntities()
+                GetEntities(this.state.connectedHubUrl)
                     .then(function (entities) {
                         if (entities === null) {
                             resolve([]);
@@ -206,19 +228,6 @@ class CustomScrollView extends Component {
                             data = this.getSensorProperties(entities.actuators[0]);
                             resolve(this.getItemsArray(data));
                         }
-                    }.bind(this))
-                    .catch(function (error) {
-                        reject(error);
-                    });
-            }
-
-            if (this.props.type === 'hubs') {
-                if (Platform.OS !== 'android') {
-                    reject('Detecting HUBs is available only on Android platform');
-                }
-                this.getHubsData()
-                    .then(function (data) {
-                        resolve(this.getItemsArray(data));
                     }.bind(this))
                     .catch(function (error) {
                         reject(error);
@@ -475,7 +484,11 @@ class CustomScrollView extends Component {
         } else if (item.type === 'actuator') {
             this.handleActuatorPress(item);
         } else if (item.type === 'hub') {
-            this.pushToNavigator('menu');
+            this.setState({connectedHubUrl: this.getHubUrl(item.bssid)});
+            this.props.navigator.immediatelyResetRouteStack([{
+                name: 'customScrollView',
+                passProps: {type: 'menu', connectedHubUrl: this.state.connectedHubUrl}
+            }]);
         } else {
             console.warn(`Unknown item type ${item.type}`);
         }
@@ -485,9 +498,14 @@ class CustomScrollView extends Component {
         this.props.navigator.push(
             {
                 name: 'customScrollView',
-                passProps: {type: type}
+                passProps: {type: type, connectedHubUrl: this.state.connectedHubUrl},
             }
         );
+    }
+
+    getHubUrl(bssid) {
+        // TODO get HUB url from API by BSSID
+        return config.serverUrl;
     }
 
     handleActuatorPress(item) {
