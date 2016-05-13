@@ -2,17 +2,18 @@ package com.zettor;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import com.github.yamill.orientation.OrientationPackage;
-import com.facebook.react.ReactActivity;
-import com.ocetnik.timer.BackgroundTimerPackage;
-import com.oblador.vectoricons.VectorIconsPackage;
-import com.github.yamill.orientation.OrientationPackage;
+import ca.jaysoo.extradimensions.ExtraDimensionsPackage;
 import co.apptailor.googlesignin.RNGoogleSigninModule;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.devstepbcn.wifi.AndroidWifiPackage;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
-import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+import com.github.yamill.orientation.OrientationPackage;
+import com.oblador.vectoricons.VectorIconsPackage;
+import com.ocetnik.timer.BackgroundTimerPackage;
+import me.neo.react.StatusBarPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,12 +48,14 @@ public class MainActivity extends ReactActivity {
     protected List<ReactPackage> getPackages() {
         mReactNativePushNotificationPackage = new ReactNativePushNotificationPackage(this);
         return Arrays.<ReactPackage>asList(
-            new MainReactPackage(),
+            new AndroidWifiPackage(),
             new BackgroundTimerPackage(),
-            new VectorIconsPackage(),
+            new ExtraDimensionsPackage(this),
+            new MainReactPackage(),
             new OrientationPackage(this),
             new RNGoogleSigninPackage(this),
-            new AndroidWifiPackage(),
+            new StatusBarPackage(this),
+            new VectorIconsPackage(),
             mReactNativePushNotificationPackage
         );
     }

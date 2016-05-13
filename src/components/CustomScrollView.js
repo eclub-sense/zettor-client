@@ -24,9 +24,11 @@ import Orientation from 'react-native-orientation';
 var BackgroundTimer = require('react-native-background-timer');
 var CustomScrollViewItem = require('./CustomScrollViewItem');
 var {itemMargin, mainItems, networksCheckDelay} = require('../env');
+var ExtraDimensions = require('react-native-extra-dimensions-android');
 var GetEntities = require('../api/getEntities');
 var PushNotification = require('react-native-push-notification');
 var reactMixin = require('react-mixin');
+var StatusBarAndroid = require('react-native-android-statusbar');
 var TimerMixin = require('react-timer-mixin');
 var wifi = require('react-native-android-wifi');
 
@@ -60,12 +62,15 @@ class CustomScrollView extends Component {
     }
 
     componentWillMount() {
-        if (!this.state.listeningForBackgroundTimer && Platform.OS === 'android') {
-            BackgroundTimer.start(networksCheckDelay);
-            this.setState({listeningForBackgroundTimer: true});
-            DeviceEventEmitter.addListener('backgroundTimer', () => {
-                this.checkHubs();
-            });
+        if (Platform.OS === 'android') {
+            StatusBarAndroid.hideStatusBar();
+            if (!this.state.listeningForBackgroundTimer) {
+                BackgroundTimer.start(networksCheckDelay);
+                this.setState({listeningForBackgroundTimer: true});
+                DeviceEventEmitter.addListener('backgroundTimer', () => {
+                    this.checkHubs();
+                });
+            }
         }
 
         this.setState({
@@ -649,13 +654,21 @@ class CustomScrollView extends Component {
 
         var height;
         if (Platform.OS === 'ios') {
+            style.push({
+                marginTop: itemMargin / 2,
+                marginBottom: itemMargin / 2,
+            });
             height = this.state.width - 2 * itemMargin;
             if (this.state.items.length < 2) {
                 style.push({marginTop: itemMargin + (this.state.height - this.state.width) / 2});
             }
         }
         if (Platform.OS === 'android') {
-            height = this.state.height - 2 * itemMargin;
+            style.push({
+                marginTop: itemMargin,
+                marginBottom: itemMargin,
+            });
+            height = ExtraDimensions.get('REAL_WINDOW_HEIGHT') - 2 * itemMargin;
         }
         style.push({height: height});
 
@@ -735,8 +748,6 @@ var styles = StyleSheet.create({
     itemWrapper: {
         borderRadius: 5,
         padding: 10,
-        marginTop: itemMargin / 2,
-        marginBottom: itemMargin / 2,
         marginLeft: itemMargin,
         marginRight: itemMargin,
         backgroundColor: '#ECF0F1',
