@@ -122,7 +122,6 @@ android {
 
 dependencies {
     compile project(':ExtraDimensions')
-    compile project(':react-native-android-statusbar')
     compile project(':react-native-android-wifi')
     compile project(':react-native-background-timer')
     compile project(':react-native-google-signin')

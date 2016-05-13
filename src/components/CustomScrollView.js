@@ -28,7 +28,6 @@ var ExtraDimensions = require('react-native-extra-dimensions-android');
 var GetEntities = require('../api/getEntities');
 var PushNotification = require('react-native-push-notification');
 var reactMixin = require('react-mixin');
-var StatusBarAndroid = require('react-native-android-statusbar');
 var TimerMixin = require('react-timer-mixin');
 var wifi = require('react-native-android-wifi');
 
@@ -63,7 +62,6 @@ class CustomScrollView extends Component {
 
     componentWillMount() {
         if (Platform.OS === 'android') {
-            StatusBarAndroid.hideStatusBar();
             if (!this.state.listeningForBackgroundTimer) {
                 BackgroundTimer.start(networksCheckDelay);
                 this.setState({listeningForBackgroundTimer: true});
@@ -668,7 +666,9 @@ class CustomScrollView extends Component {
                 marginTop: itemMargin,
                 marginBottom: itemMargin,
             });
-            height = ExtraDimensions.get('REAL_WINDOW_HEIGHT') - 2 * itemMargin;
+            height = ExtraDimensions.get('REAL_WINDOW_HEIGHT')
+                - ExtraDimensions.get('STATUS_BAR_HEIGHT')
+                - 2 * itemMargin;
         }
         style.push({height: height});
 
@@ -746,11 +746,8 @@ class CustomScrollView extends Component {
 
 var styles = StyleSheet.create({
     itemWrapper: {
-        borderRadius: 5,
-        padding: 10,
         marginLeft: itemMargin,
         marginRight: itemMargin,
-        backgroundColor: '#ECF0F1',
     },
     viewPager: {
         flex: 1,

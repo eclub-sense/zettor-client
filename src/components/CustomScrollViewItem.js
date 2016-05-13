@@ -98,9 +98,12 @@ class CustomScrollViewItem extends React.Component {
 
 var styles = StyleSheet.create({
     container: {
+        padding: 10,
         alignItems: 'center',
         justifyContent: 'space-around',
         flex: 1,
+        borderRadius: 5,
+        backgroundColor: '#ECF0F1',
     },
     subtitle: {
         fontSize: 15,
