@@ -2,19 +2,35 @@
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, Platform, StyleSheet} from 'react-native';
+
+if (Platform.OS === 'android') {
+    var ExtraDimensions = require('react-native-extra-dimensions-android');
+}
 
 var Button = require('./Button');
-var {mainItems} = require('../env');
+var {itemMargin, mainItems} = require('../env');
+
+const BORDER_RADIUS = 5;
 
 class CustomScrollViewItem extends React.Component {
     render() {
+        return (
+            <View style={this.getContainerStyle()}>
+                {this.getArrowLeft()}
+                {this.getItem()}
+                {this.getArrowRight()}
+            </View>
+        );
+    }
+
+    getItem() {
         var item = this.props.item;
         var title = <Text style={styles.title}>{item.title}</Text>;
 
         if (item.type === 'info') {
             return (
-                <View style={styles.container}>
+                <View style={this.getItemStyle()}>
                     <Text style={styles.title}>{title}</Text>
                 </View>
             );
@@ -22,7 +38,7 @@ class CustomScrollViewItem extends React.Component {
 
         if (item.type === 'sensor' || item.type === 'hub') {
             return (
-                <View style={styles.container}>
+                <View style={this.getItemStyle()}>
                     {title}
                     <Text style={styles.value}>{item.value}</Text>
                 </View>
@@ -31,7 +47,7 @@ class CustomScrollViewItem extends React.Component {
 
         if (item.type === 'hubDetected') {
             return (
-                <View style={styles.container}>
+                <View style={this.getItemStyle()}>
                     {title}
                     {this.getSubtitles(item)}
                     <Button
@@ -61,7 +77,7 @@ class CustomScrollViewItem extends React.Component {
 
         if (item.type === 'actuator' || mainItems.indexOf(item.type) !== -1) {
             return (
-                <View style={styles.container}>
+                <View style={this.getItemStyle()}>
                     <View>
                         {title}
                         {this.getSubtitles(item)}
@@ -94,16 +110,75 @@ class CustomScrollViewItem extends React.Component {
             return item.icon;
         }
     }
+
+    getArrowLeft() {
+        if (Platform.OS === 'android') {
+            return (
+                <View style={styles.arrow}>
+                    <Icon name="chevron-left" size={100} color="#ECF0F1"/>
+                </View>
+            );
+        }
+    }
+
+    getArrowRight() {
+        if (Platform.OS === 'android') {
+            return (
+                <View style={styles.arrow}>
+                    <Icon name="chevron-right" size={100} color="#ECF0F1"/>
+                </View>
+            );
+        }
+    }
+
+    getContainerStyle() {
+        var style = [styles.containerBase];
+        if (Platform.OS === 'ios') {
+            style.push({
+                backgroundColor: '#ECF0F1',
+                padding: 10,
+                borderRadius: BORDER_RADIUS,
+            });
+        } else {
+            style.push({
+                flexDirection: 'row',
+            })
+        }
+
+        return style;
+    }
+
+    getItemStyle() {
+        var style = [styles.itemBase];
+        if (Platform.OS === 'android') {
+            var itemSize = ExtraDimensions.get('REAL_WINDOW_HEIGHT')
+                - ExtraDimensions.get('STATUS_BAR_HEIGHT')
+                - 2 * itemMargin;
+            style.push({
+                backgroundColor: 'white',
+                justifyContent: 'space-around',
+                height: itemSize,
+                width: itemSize,
+                borderRadius: BORDER_RADIUS,
+            })
+        }
+
+        return style;
+    }
 }
 
 var styles = StyleSheet.create({
-    container: {
-        padding: 10,
+    arrow: {
+        flex: 1,
+        alignItems: 'center',
+    },
+    containerBase: {
         alignItems: 'center',
         justifyContent: 'space-around',
         flex: 1,
-        borderRadius: 5,
-        backgroundColor: '#ECF0F1',
+    },
+    itemBase: {
+        alignItems: 'center',
     },
     subtitle: {
         fontSize: 15,
