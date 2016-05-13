@@ -34,9 +34,10 @@ class CustomScrollViewItem extends React.Component {
                 <View style={styles.container}>
                     {title}
                     {this.getSubtitles(item)}
-                    <Button text={'Connect to this HUB'} onPress={this.onButtonPress}/>
-                    <Button text={`Stay connected to ${item.connectedHubTitle}`} onPress={this.onButtonPress}/>
-                    <Button text={'Connect to other HUB'} onPress={this.onButtonPress}/>
+                    <Button text={'Connect to this HUB'} onPress={this.onConnectToHubButtonPress}/>
+                    <Button text={`Stay connected to ${item.data.connectedHub.title}`}
+                            onPress={this.onStayConnectedButtonPress}/>
+                    <Button text={'Connect to other HUB'} onPress={this.onConnectToOtherHubButtonPress}/>
                 </View>
             );
         }
@@ -77,8 +78,16 @@ class CustomScrollViewItem extends React.Component {
         }
     }
 
-    onButtonPress() {
-        console.log('button pressed');
+    onConnectToHubButtonPress() {
+        console.log('connect to hub pressed');
+    }
+
+    onStayConnectedButtonPress() {
+        console.log('stay connected pressed');
+    }
+
+    onConnectToOtherHubButtonPress() {
+        console.log('connect to other hub pressed');
     }
 }
 

@@ -123,9 +123,8 @@ class CustomScrollView extends Component {
 
     onNotificationPress(notification) {
         var data = {
-            detectedHubTitle: notification.message,
-            detectedHubBssid: notification.data,
-            connectedHubTitle: this.state.connectedHub.title,
+            connectedHub: this.state.connectedHub,
+            detectedHub: notification.data,
         };
         this.pushToNavigator('hubDetected', data);
     }
@@ -228,9 +227,8 @@ class CustomScrollView extends Component {
                     id: 'hubDetected',
                     type: 'hubDetected',
                     title: 'HUB Detected',
-                    subtitles: [this.props.data.detectedHubTitle],
-                    bssid: this.props.data.detectedHubBssid,
-                    connectedHubTitle: this.props.data.connectedHubTitle,
+                    subtitles: [this.props.data.detectedHub.title],
+                    data: this.props.data,
                 }]);
             }
 
@@ -683,13 +681,18 @@ class CustomScrollView extends Component {
                 .then(function (data) {
                     if (data.length > 0) {
                         var hubWithTheBestSignal = data[0];
+                        var notificationData = {
+                            title: hubWithTheBestSignal.title,
+                            url: this.getHubUrl(hubWithTheBestSignal.bssid),
+                            bssid: hubWithTheBestSignal.bssid,
+                        };
                         var hubWithTheBestSignalBssid = hubWithTheBestSignal.bssid;
                         if (hubWithTheBestSignalBssid !== this.state.connectedHub.bssid) {
                             // TODO and hubWithTheBestSignalBssid !== ignoredHubBssid
                             PushNotification.localNotification({
                                 title: 'Zettor HUB Detected',
                                 message: hubWithTheBestSignal.title,
-                                data: hubWithTheBestSignalBssid,
+                                data: JSON.stringify(notificationData),
                             });
                         }
                     }
