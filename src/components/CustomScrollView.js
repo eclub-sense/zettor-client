@@ -24,12 +24,15 @@ import Orientation from 'react-native-orientation';
 var BackgroundTimer = require('react-native-background-timer');
 var CustomScrollViewItem = require('./CustomScrollViewItem');
 var {itemMargin, mainItems, networksCheckDelay} = require('../env');
-var ExtraDimensions = require('react-native-extra-dimensions-android');
 var GetEntities = require('../api/getEntities');
 var PushNotification = require('react-native-push-notification');
 var reactMixin = require('react-mixin');
 var TimerMixin = require('react-timer-mixin');
 var wifi = require('react-native-android-wifi');
+
+if (Platform.OS === 'android') {
+    var ExtraDimensions = require('react-native-extra-dimensions-android');
+}
 
 const STATE_ON = 'ON';
 const TURN_ON = 'turn-on';
@@ -230,7 +233,8 @@ class CustomScrollView extends Component {
             }
 
             if (this.props.type === 'actuators' || this.props.type === 'sensors') {
-                GetEntities(this.state.connectedHub.url)
+                var hubUrl = Platform.OS === 'android' ? this.state.connectedHub.url : config.serverUrl;
+                GetEntities(hubUrl)
                     .then(function (entities) {
                         if (entities === null) {
                             resolve([]);
