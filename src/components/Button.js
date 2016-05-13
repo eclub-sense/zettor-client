@@ -19,16 +19,20 @@ class Button extends React.Component {
 
 var styles = StyleSheet.create({
     button: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
+        borderColor: '#2980B9',
         padding: 5,
-        marginTop: 10,
+        margin: 5,
     },
     buttonText: {
         flex: 1,
+        color: '#2980B9',
         alignSelf: 'center',
-        fontSize: 10,
+        textAlign: 'center',
+        fontSize: 15,
     },
 });
 

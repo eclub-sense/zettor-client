@@ -50,27 +50,29 @@ class CustomScrollViewItem extends React.Component {
                 <View style={this.getItemStyle()}>
                     {title}
                     {this.getSubtitles(item)}
-                    <Button
-                        text={'Connect to this HUB'}
-                        onPress={() => {
+                    <View style={styles.buttonContainer}>
+                        <Button
+                            text={'Connect to this HUB'}
+                            onPress={() => {
                             //noinspection JSUnresolvedFunction
                             this.props.onConnectToHubButtonPress(item.data.detectedHub);}
                         }
-                    />
-                    <Button
-                        text={`Stay connected to ${item.data.connectedHub.title}`}
-                        onPress={() => {
+                        />
+                        <Button
+                            text={`Stay connected to ${item.data.connectedHub.title}`}
+                            onPress={() => {
                             //noinspection JSUnresolvedFunction
                             this.props.onStayConnectedButtonPress(item.data.detectedHub);}
                         }
-                    />
-                    <Button
-                        text={'Connect to other HUB'}
-                        onPress={() => {
+                        />
+                        <Button
+                            text={'Connect to other HUB'}
+                            onPress={() => {
                             //noinspection JSUnresolvedFunction
                             this.props.onConnectToOtherHubButtonPress();}
                         }
-                    />
+                        />
+                    </View>
                 </View>
             );
         }
@@ -155,7 +157,7 @@ class CustomScrollViewItem extends React.Component {
                 - ExtraDimensions.get('STATUS_BAR_HEIGHT')
                 - 2 * itemMargin;
             style.push({
-                backgroundColor: 'white',
+                backgroundColor: '#ECF0F1',
                 justifyContent: 'space-around',
                 height: itemSize,
                 width: itemSize,
@@ -171,6 +173,10 @@ var styles = StyleSheet.create({
     arrow: {
         flex: 1,
         alignItems: 'center',
+    },
+    buttonContainer: {
+        flex: 1,
+        alignSelf: 'stretch',
     },
     containerBase: {
         alignItems: 'center',
