@@ -3,6 +3,7 @@
 var React = require('react-native');
 var {
     Navigator,
+    Platform,
     StyleSheet,
     } = React;
 
@@ -21,7 +22,7 @@ module.exports = React.createClass({
                     {
                         name: 'customScrollView',
                         passProps: {
-                            type: 'menu',
+                            type: Platform.OS === 'android' ? 'hubs' : 'menu',
                             isLoading: false,
                         }
                     }

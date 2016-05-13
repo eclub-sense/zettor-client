@@ -47,6 +47,7 @@ class CustomScrollView extends Component {
             contentOffset: 0,
             user: null,
             connectedHub: this.props.connectedHub,
+            ignoredHub: this.props.ignoredHub,
             listeningForBackgroundTimer: this.props.listeningForBackgroundTimer,
         };
         BackAndroid.addEventListener('hardwareBackPress', () => {
@@ -192,12 +193,7 @@ class CustomScrollView extends Component {
     fetchItems():Array<any> {
         return new Promise(function (resolve, reject) {
 
-            if (this.props.type === 'menu' &&
-                (
-                    Platform.OS === 'ios' ||
-                    (Platform.OS === 'android' && this.state.connectedHub != null)
-                )
-            ) {
+            if (this.props.type === 'menu') {
                 this.getMenuData()
                     .then(function (data) {
                         resolve(this.getItemsArray(data));
@@ -207,9 +203,7 @@ class CustomScrollView extends Component {
                     });
             }
 
-            if (this.props.type === 'hubs' && Platform.OS === 'ios' ||
-                (Platform.OS === 'android' && this.state.connectedHub == null)
-            ) {
+            if (this.props.type === 'hubs') {
                 if (Platform.OS !== 'android') {
                     reject('Detecting HUBs is available only on Android platform');
                 }
@@ -460,7 +454,12 @@ class CustomScrollView extends Component {
                             activeOpacity={!disabled ? ACTIVE_OPACITY : 1}
                             onPress={!disabled ? this.handleOnPress.bind(this, item) : null}
                         >
-                            <CustomScrollViewItem item={item}/>
+                            <CustomScrollViewItem
+                                item={item}
+                                onConnectToHubButtonPress={this.connectToHub.bind(this)}
+                                onStayConnectedButtonPress={this.ignoreHub.bind(this)}
+                                onConnectToOtherHubButtonPress={this.pushHubsToNavigator.bind(this)}
+                            />
                         </TouchableOpacity>
                     </View>
                 );
@@ -502,24 +501,41 @@ class CustomScrollView extends Component {
         } else if (item.type === 'actuator') {
             this.handleActuatorPress(item);
         } else if (item.type === 'hub') {
-            this.setState({
-                connectedHub: {
-                    title: item.title,
-                    url: this.getHubUrl(item.bssid),
-                    bssid: item.bssid,
-                }
-            });
-            this.props.navigator.immediatelyResetRouteStack([{
-                name: 'customScrollView',
-                passProps: {
-                    type: 'menu',
-                    connectedHub: this.state.connectedHub,
-                    listeningForBackgroundTimer: this.state.listeningForBackgroundTimer,
-                }
-            }]);
+            var newHubData = {
+                title: item.title,
+                url: this.getHubUrl(item.bssid),
+                bssid: item.bssid,
+            };
+            this.connectToHub(newHubData);
         } else {
             console.warn(`Unknown item type ${item.type}`);
         }
+    }
+
+    showMenu(navigator) {
+        navigator.immediatelyResetRouteStack([{
+            name: 'customScrollView',
+            passProps: {
+                type: 'menu',
+                connectedHub: this.state.connectedHub,
+                ignoredHub: this.state.ignoredHub,
+                listeningForBackgroundTimer: this.state.listeningForBackgroundTimer,
+            }
+        }]);
+    }
+
+    connectToHub(hubData) {
+        this.setState({connectedHub: hubData});
+        this.showMenu(this.props.navigator);
+    }
+
+    ignoreHub(hubData) {
+        this.setState({ignoredHub: hubData});
+        this.showMenu(this.props.navigator);
+    }
+
+    pushHubsToNavigator() {
+        this.pushToNavigator('hubs');
     }
 
     pushToNavigator(type, data) {
@@ -530,6 +546,7 @@ class CustomScrollView extends Component {
                     type: type,
                     data: data,
                     connectedHub: this.state.connectedHub,
+                    ignoredHub: this.state.ignoredHub,
                     listeningForBackgroundTimer: this.state.listeningForBackgroundTimer,
                 },
             }
@@ -687,8 +704,7 @@ class CustomScrollView extends Component {
                             bssid: hubWithTheBestSignal.bssid,
                         };
                         var hubWithTheBestSignalBssid = hubWithTheBestSignal.bssid;
-                        if (hubWithTheBestSignalBssid !== this.state.connectedHub.bssid) {
-                            // TODO and hubWithTheBestSignalBssid !== ignoredHubBssid
+                        if (this.notificationNeeded(hubWithTheBestSignalBssid)) {
                             PushNotification.localNotification({
                                 title: 'Zettor HUB Detected',
                                 message: hubWithTheBestSignal.title,
@@ -698,9 +714,20 @@ class CustomScrollView extends Component {
                     }
                 }.bind(this))
                 .catch((error) => {
-                    console.log(error);
+                    console.warn(error);
                 });
         }
+    }
+
+    notificationNeeded(hubWithTheBestSignalBssid) {
+        return hubWithTheBestSignalBssid !== this.state.connectedHub.bssid &&
+            (
+                this.state.ignoredHub == null ||
+                (
+                    this.state.ignoredHub != null &&
+                    hubWithTheBestSignalBssid !== this.state.ignoredHub.bssid
+                )
+            );
     }
 }
 
