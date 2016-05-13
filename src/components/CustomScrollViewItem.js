@@ -114,7 +114,7 @@ class CustomScrollViewItem extends React.Component {
     }
 
     getArrowLeft() {
-        if (Platform.OS === 'android') {
+        if (Platform.OS === 'android' && !this.props.item.isAlone) {
             return (
                 <View style={styles.arrow}>
                     <Icon name="chevron-left" size={100} color="#ECF0F1"/>
@@ -124,7 +124,7 @@ class CustomScrollViewItem extends React.Component {
     }
 
     getArrowRight() {
-        if (Platform.OS === 'android') {
+        if (Platform.OS === 'android' && !this.props.item.isAlone) {
             return (
                 <View style={styles.arrow}>
                     <Icon name="chevron-right" size={100} color="#ECF0F1"/>

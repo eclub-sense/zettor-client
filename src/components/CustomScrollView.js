@@ -229,6 +229,7 @@ class CustomScrollView extends Component {
                     title: 'HUB Detected',
                     subtitles: [this.props.data.detectedHub.title],
                     data: this.props.data,
+                    isAlone: true,
                 }]);
             }
 
@@ -349,6 +350,10 @@ class CustomScrollView extends Component {
         var newFirstItem;
         var newLastItem;
         var items = data.slice();
+
+        if (items.length === 1) {
+            items[0].isAlone = true;
+        }
 
         if (items.length > 1) {
             if (Platform.OS === 'android') {
@@ -489,7 +494,7 @@ class CustomScrollView extends Component {
     }
 
     makeInfoItem(title) {
-        var item = {type: 'info', title: title};
+        var item = {type: 'info', title: title, isAlone: true};
 
         return (
             <CustomScrollViewItem item={item}/>
