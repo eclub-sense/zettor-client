@@ -1,6 +1,6 @@
 'use strict';
 
-var config = require('../../../config.json');
+var config = require('../../config.json');
 var iosClientId = config.iosClientId;
 var webClientId = config.webClientId;
 
@@ -22,8 +22,8 @@ import {GoogleSignin} from 'react-native-google-signin';
 import Orientation from 'react-native-orientation';
 
 var BackgroundTimer = require('react-native-background-timer');
-var CustomScrollViewItem = require('../CustomScrollViewItem');
-var {itemMargin, mainItems, networksCheckDelay} = require('../../env');
+var CustomScrollViewItem = require('./CustomScrollViewItem');
+var {itemMargin, mainItems, networksCheckDelay} = require('../env');
 var GetEntities = require('../api/getEntities');
 var PushNotification = require('react-native-push-notification');
 var reactMixin = require('react-mixin');

@@ -6,7 +6,7 @@ var {
     StyleSheet,
     } = React;
 
-var CustomScrollView = require('./components/common/customScrollView');
+var CustomScrollView = require('./components/CustomScrollView');
 
 var ROUTES = {
     customScrollView: CustomScrollView,
