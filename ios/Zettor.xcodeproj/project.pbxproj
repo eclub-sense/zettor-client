@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -32,7 +33,6 @@
 		630D575B1CDA2914009CB12C /* GoogleSignIn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 630D57561CDA2914009CB12C /* GoogleSignIn.framework */; };
 		630D575C1CDA2914009CB12C /* RNGoogleSignin.m in Sources */ = {isa = PBXBuildFile; fileRef = 630D57581CDA2914009CB12C /* RNGoogleSignin.m */; };
 		630D575D1CDA2914009CB12C /* RNGoogleSigninButtonManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 630D57591CDA2914009CB12C /* RNGoogleSigninButtonManager.m */; };
-		630D576C1CDA29B7009CB12C /* Orientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 630D576B1CDA29B7009CB12C /* Orientation.m */; };
 		7ABF9F5B8C77432BB4B7AD0D /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7D46A3B776DB422FA30DAF19 /* FontAwesome.ttf */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		9D5D706877A046F79FD8E866 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DDFCC58B3E124A1E891A8217 /* Entypo.ttf */; };
@@ -159,8 +159,6 @@
 		630D57571CDA2914009CB12C /* RNGoogleSignin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNGoogleSignin.h; sourceTree = "<group>"; };
 		630D57581CDA2914009CB12C /* RNGoogleSignin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGoogleSignin.m; sourceTree = "<group>"; };
 		630D57591CDA2914009CB12C /* RNGoogleSigninButtonManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNGoogleSigninButtonManager.m; sourceTree = "<group>"; };
-		630D576A1CDA29B7009CB12C /* Orientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Orientation.h; sourceTree = "<group>"; };
-		630D576B1CDA29B7009CB12C /* Orientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Orientation.m; sourceTree = "<group>"; };
 		69C1DF1B69F64A928ADB7ED3 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		7D46A3B776DB422FA30DAF19 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
@@ -337,15 +335,6 @@
 			path = RNGoogleSignin;
 			sourceTree = "<group>";
 		};
-		630D57691CDA29B7009CB12C /* RCTOrientation */ = {
-			isa = PBXGroup;
-			children = (
-				630D576A1CDA29B7009CB12C /* Orientation.h */,
-				630D576B1CDA29B7009CB12C /* Orientation.m */,
-			);
-			path = RCTOrientation;
-			sourceTree = "<group>";
-		};
 		78C398B11ACF4ADC00677621 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -383,7 +372,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				630D57691CDA29B7009CB12C /* RCTOrientation */,
 				630D57541CDA2914009CB12C /* RNGoogleSignin */,
 				630D57471CDA26B2009CB12C /* libz.tbd */,
 				630D57451CDA2689009CB12C /* SystemConfiguration.framework */,
@@ -668,7 +656,6 @@
 				630D575D1CDA2914009CB12C /* RNGoogleSigninButtonManager.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				630D576C1CDA29B7009CB12C /* Orientation.m in Sources */,
 				630D575C1CDA2914009CB12C /* RNGoogleSignin.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

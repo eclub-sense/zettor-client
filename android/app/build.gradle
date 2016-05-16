@@ -125,7 +125,6 @@ dependencies {
     compile project(':react-native-android-wifi')
     compile project(':react-native-background-timer')
     compile project(':react-native-google-signin')
-    compile project(':react-native-orientation')
     compile project(':react-native-push-notification')
     compile project(':react-native-vector-icons')
     compile fileTree(dir: "libs", include: ["*.jar"])

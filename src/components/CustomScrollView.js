@@ -19,7 +19,6 @@ var {
     } = React;
 
 import {GoogleSignin} from 'react-native-google-signin';
-import Orientation from 'react-native-orientation';
 
 var BackgroundTimer = require('react-native-background-timer');
 var CustomScrollViewItem = require('./CustomScrollViewItem');
@@ -47,7 +46,6 @@ class CustomScrollView extends Component {
             items: [],
             width: -1,
             height: -1,
-            orientation: '',
             contentOffset: 0,
             user: null,
             connectedHub: this.props.connectedHub,
@@ -78,7 +76,6 @@ class CustomScrollView extends Component {
         this.setState({
             width: Dimensions.get('window').width,
             height: Dimensions.get('window').height,
-            orientation: Orientation.getInitialOrientation(),
         });
     }
 
@@ -102,7 +99,6 @@ class CustomScrollView extends Component {
                 this.setState({user: user});
             })
             .then(()=> {
-                Orientation.addOrientationListener(this.orientationDidChange.bind(this));
                 this.fetchItems()
                     .then(
                         function (items) {
@@ -113,7 +109,7 @@ class CustomScrollView extends Component {
                                         contentOffset: this.getInitialContentOffset(),
                                     });
                                 }
-                                if (Platform.OS === 'android' && this.state.orientation === 'LANDSCAPE') {
+                                if (Platform.OS === 'android') {
                                     this.viewPager.setPage(1);
                                 }
                             }
@@ -143,17 +139,7 @@ class CustomScrollView extends Component {
         return 2 * itemSize - ((this.state.height - itemSize) / 2);
     }
 
-    componentWillUnmount() {
-        Orientation.removeOrientationListener(this.orientationDidChange);
-    }
-
     render() {
-        //if (Platform.OS === 'android' && this.state.orientation === 'PORTRAIT') {
-        //    return this.infoItem('Rotate your device into landscape');
-        //}
-        //if (Platform.OS === 'ios' && this.state.orientation === 'LANDSCAPE') {
-        //    return this.infoItem('Rotate your device into portrait');
-        //}
         if (this.state.isLoading) {
             return this.infoItem('Loading...');
         }
@@ -430,17 +416,6 @@ class CustomScrollView extends Component {
                 this.viewPager.setPageWithoutAnimation(page);
                 this.setState({page: page});
             }, 300);
-        }
-    }
-
-    orientationDidChange(orientation:String) {
-        if (this.state.orientation !== orientation) {
-            //noinspection JSSuspiciousNameCombination
-            this.setState({
-                width: this.state.height,
-                height: this.state.width,
-                orientation: orientation
-            });
         }
     }
 

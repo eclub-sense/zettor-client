@@ -10,7 +10,6 @@ import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
-import com.github.yamill.orientation.OrientationPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.ocetnik.timer.BackgroundTimerPackage;
 
@@ -51,7 +50,6 @@ public class MainActivity extends ReactActivity {
             new BackgroundTimerPackage(),
             new ExtraDimensionsPackage(this),
             new MainReactPackage(),
-            new OrientationPackage(this),
             new RNGoogleSigninPackage(this),
             new VectorIconsPackage(),
             mReactNativePushNotificationPackage
