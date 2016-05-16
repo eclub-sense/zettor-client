@@ -2,7 +2,7 @@
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import React from 'react';
-import {View, Text, Platform, StyleSheet} from 'react-native';
+import {View, Text, Platform, StyleSheet, TouchableOpacity} from 'react-native';
 
 if (Platform.OS === 'android') {
     var ExtraDimensions = require('react-native-extra-dimensions-android');
@@ -54,23 +54,26 @@ class CustomScrollViewItem extends React.Component {
                         <Button
                             text={'Connect to this HUB'}
                             onPress={() => {
-                            //noinspection JSUnresolvedFunction
-                            this.props.onConnectToHubButtonPress(item.data.detectedHub);}
-                        }
+                                //noinspection JSUnresolvedFunction
+                                this.props.onConnectToHubButtonPress(item.data.detectedHub);
+                                }
+                            }
                         />
                         <Button
                             text={`Stay connected to ${item.data.connectedHub.title}`}
                             onPress={() => {
-                            //noinspection JSUnresolvedFunction
-                            this.props.onStayConnectedButtonPress(item.data.detectedHub);}
-                        }
+                                    //noinspection JSUnresolvedFunction
+                                    this.props.onStayConnectedButtonPress(item.data.detectedHub);
+                                }
+                            }
                         />
                         <Button
                             text={'Connect to other HUB'}
                             onPress={() => {
-                            //noinspection JSUnresolvedFunction
-                            this.props.onConnectToOtherHubButtonPress();}
-                        }
+                                    //noinspection JSUnresolvedFunction
+                                    this.props.onConnectToOtherHubButtonPress();
+                                }
+                            }
                         />
                     </View>
                 </View>
@@ -116,9 +119,16 @@ class CustomScrollViewItem extends React.Component {
     getArrowLeft() {
         if (Platform.OS === 'android' && !this.props.item.isAlone) {
             return (
-                <View style={styles.arrow}>
+                <TouchableOpacity
+                    style={styles.touchableOpacity}
+                    onPress={() => {
+                        //noinspection JSUnresolvedFunction
+                        this.props.onPrevItemPress();
+                        }
+                    }
+                >
                     <Icon name="chevron-left" size={100} color="#ECF0F1"/>
-                </View>
+                </TouchableOpacity>
             );
         }
     }
@@ -126,9 +136,16 @@ class CustomScrollViewItem extends React.Component {
     getArrowRight() {
         if (Platform.OS === 'android' && !this.props.item.isAlone) {
             return (
-                <View style={styles.arrow}>
+                <TouchableOpacity
+                    style={styles.touchableOpacity}
+                    onPress={() => {
+                        //noinspection JSUnresolvedFunction
+                        this.props.onNextItemPress();
+                        }
+                    }
+                >
                     <Icon name="chevron-right" size={100} color="#ECF0F1"/>
-                </View>
+                </TouchableOpacity>
             );
         }
     }
@@ -170,10 +187,6 @@ class CustomScrollViewItem extends React.Component {
 }
 
 var styles = StyleSheet.create({
-    arrow: {
-        flex: 1,
-        alignItems: 'center',
-    },
     buttonContainer: {
         flex: 1,
         alignSelf: 'stretch',
@@ -195,6 +208,12 @@ var styles = StyleSheet.create({
         fontSize: 50,
         color: '#2980B9',
         textAlign: 'center',
+    },
+    touchableOpacity: {
+        flex: 1,
+        alignSelf: 'stretch',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     value: {
         fontSize: 50,

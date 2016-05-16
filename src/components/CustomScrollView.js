@@ -53,6 +53,7 @@ class CustomScrollView extends Component {
             connectedHub: this.props.connectedHub,
             ignoredHub: this.props.ignoredHub,
             listeningForBackgroundTimer: this.props.listeningForBackgroundTimer,
+            page: 1,
         };
         BackAndroid.addEventListener('hardwareBackPress', () => {
             if (this.props.navigator && this.props.navigator.getCurrentRoutes().length > 1) {
@@ -177,6 +178,7 @@ class CustomScrollView extends Component {
 
     onPageSelected(event:Object) {
         var position = event.nativeEvent.position;
+        this.setState({page: position});
         this.shiftItemsAndroid(position);
     }
 
@@ -417,12 +419,16 @@ class CustomScrollView extends Component {
         var numOfItems = this.state.items.length;
         if (position === 0) {
             this.setTimeout(() => {
-                this.viewPager.setPageWithoutAnimation(numOfItems - 2);
+                var page = numOfItems - 2;
+                this.viewPager.setPageWithoutAnimation(page);
+                this.setState({page: page});
             }, 300);
         }
         if (position === numOfItems - 1) {
             this.setTimeout(() => {
-                this.viewPager.setPageWithoutAnimation(1);
+                var page = 1;
+                this.viewPager.setPageWithoutAnimation(page);
+                this.setState({page: page});
             }, 300);
         }
     }
@@ -471,6 +477,20 @@ class CustomScrollView extends Component {
                                 onConnectToHubButtonPress={this.connectToHub.bind(this)}
                                 onStayConnectedButtonPress={this.ignoreHub.bind(this)}
                                 onConnectToOtherHubButtonPress={this.pushHubsToNavigator.bind(this)}
+                                onPrevItemPress={
+                                    () => {
+                                        this.setState({page: --this.state.page});
+                                        this.viewPager.setPage(this.state.page);
+                                        this.shiftItemsAndroid(this.state.page);
+                                    }
+                                }
+                                onNextItemPress={
+                                    () => {
+                                        this.setState({page: ++this.state.page});
+                                        this.viewPager.setPage(this.state.page);
+                                        this.shiftItemsAndroid(this.state.page);
+                                    }
+                                }
                             />
                         </TouchableOpacity>
                     </View>
