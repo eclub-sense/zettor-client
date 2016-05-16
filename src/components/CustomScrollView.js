@@ -20,6 +20,7 @@ var {
     } = React;
 
 import {GoogleSignin} from 'react-native-google-signin';
+import Toast from 'react-native-root-toast';
 
 var BackgroundTimer = require('react-native-background-timer');
 var CustomScrollViewItem = require('./CustomScrollViewItem');
@@ -694,8 +695,11 @@ class CustomScrollView extends Component {
             })
             .then(() => {
                 this.showMenu(this.props.navigator);
+                var toastMessage = `You are logged in as ${this.state.user.name}`;
                 if (Platform.OS === 'android') {
-                    ToastAndroid.show(`You are logged in as ${this.state.user.name}`, ToastAndroid.LONG);
+                    ToastAndroid.show(toastMessage, ToastAndroid.LONG);
+                } else {
+                    this.showToast(toastMessage);
                 }
             })
             .catch((error) => {
@@ -719,11 +723,21 @@ class CustomScrollView extends Component {
             })
             .then(() => {
                 this.showMenu(this.props.navigator);
+                var toastMessage = `You have been successfully logged out`;
                 if (Platform.OS === 'android') {
-                    ToastAndroid.show(`You have been successfully logged out`, ToastAndroid.LONG);
+                    ToastAndroid.show(toastMessage, ToastAndroid.LONG);
+                } else {
+                    this.showToast(toastMessage);
                 }
             })
             .done();
+    }
+
+    showToast(message) {
+        Toast.show(message, {
+            duration: Toast.durations.LONG,
+            position: Toast.positions.CENTER,
+        });
     }
 
     checkHubs() {
