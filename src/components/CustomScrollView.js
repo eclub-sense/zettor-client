@@ -535,7 +535,9 @@ class CustomScrollView extends Component {
     connectToHub(hubData) {
         this.setState({connectedHub: hubData});
         this.showMenu(this.props.navigator);
-        ToastAndroid.show(`Connected to ${hubData.title}`, ToastAndroid.LONG);
+        if (Platform.OS === 'android') {
+            ToastAndroid.show(`Connected to ${hubData.title}`, ToastAndroid.LONG);
+        }
     }
 
     ignoreHub(hubData) {
@@ -688,6 +690,13 @@ class CustomScrollView extends Component {
             })
             .then(()=> {
                 this.setState({items: this.getItemsArray(this.getMenuItemsArray())});
+
+            })
+            .then(() => {
+                this.showMenu(this.props.navigator);
+                if (Platform.OS === 'android') {
+                    ToastAndroid.show(`You are logged in as ${this.state.user.name}`, ToastAndroid.LONG);
+                }
             })
             .catch((error) => {
                 if (error.code !== -5) { // user doesn't cancel signin process
@@ -707,6 +716,12 @@ class CustomScrollView extends Component {
             })
             .then(()=> {
                 this.setState({items: this.getItemsArray(this.getMenuItemsArray())});
+            })
+            .then(() => {
+                this.showMenu(this.props.navigator);
+                if (Platform.OS === 'android') {
+                    ToastAndroid.show(`You have been successfully logged out`, ToastAndroid.LONG);
+                }
             })
             .done();
     }
