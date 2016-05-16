@@ -13,6 +13,7 @@ var {
     Platform,
     ScrollView,
     StyleSheet,
+    ToastAndroid,
     TouchableOpacity,
     View,
     ViewPagerAndroid,
@@ -534,6 +535,7 @@ class CustomScrollView extends Component {
     connectToHub(hubData) {
         this.setState({connectedHub: hubData});
         this.showMenu(this.props.navigator);
+        ToastAndroid.show(`Connected to ${hubData.title}`, ToastAndroid.LONG);
     }
 
     ignoreHub(hubData) {
