@@ -1,11 +1,11 @@
 'use strict';
 
-var config = require('../../config.json');
-var iosClientId = config.iosClientId;
-var webClientId = config.webClientId;
+const config = require('../../config.json');
+const iosClientId = config.iosClientId;
+const webClientId = config.webClientId;
 
-var React = require('react-native');
-var {
+const React = require('react-native');
+const {
     BackAndroid,
     Component,
     DeviceEventEmitter,
@@ -22,14 +22,14 @@ var {
 import {GoogleSignin} from 'react-native-google-signin';
 import Toast from 'react-native-root-toast';
 
-var BackgroundTimer = require('react-native-background-timer');
-var CustomScrollViewItem = require('./CustomScrollViewItem');
-var {itemMargin, mainItems, networksCheckDelay} = require('../env');
-var GetEntities = require('../api/getEntities');
-var PushNotification = require('react-native-push-notification');
-var reactMixin = require('react-mixin');
-var TimerMixin = require('react-timer-mixin');
-var wifi = require('react-native-android-wifi');
+const BackgroundTimer = require('react-native-background-timer');
+const CustomScrollViewItem = require('./CustomScrollViewItem');
+const {itemMargin, mainItems, networksCheckDelay} = require('../env');
+const GetEntities = require('../api/getEntities');
+const PushNotification = require('react-native-push-notification');
+const reactMixin = require('react-mixin');
+const TimerMixin = require('react-timer-mixin');
+const wifi = require('react-native-android-wifi');
 
 if (Platform.OS === 'android') {
     var ExtraDimensions = require('react-native-extra-dimensions-android');
@@ -128,7 +128,7 @@ class CustomScrollView extends Component {
     }
 
     onNotificationPress(notification) {
-        var data = {
+        const data = {
             connectedHub: this.state.connectedHub,
             detectedHub: notification.data,
         };
@@ -136,7 +136,7 @@ class CustomScrollView extends Component {
     }
 
     getInitialContentOffset() {
-        var itemSize = this.state.width - itemMargin;
+        const itemSize = this.state.width - itemMargin;
 
         return 2 * itemSize - ((this.state.height - itemSize) / 2);
     }
@@ -165,7 +165,7 @@ class CustomScrollView extends Component {
     }
 
     onPageSelected(event:Object) {
-        var position = event.nativeEvent.position;
+        const position = event.nativeEvent.position;
         this.setState({page: position});
         this.shiftItemsAndroid(position);
     }
@@ -186,7 +186,7 @@ class CustomScrollView extends Component {
         );
     }
 
-    fetchItems():Array<any> {
+    fetchItems() {
         return new Promise(function (resolve, reject) {
 
             if (this.props.type === 'menu') {
@@ -224,13 +224,13 @@ class CustomScrollView extends Component {
             }
 
             if (this.props.type === 'actuators' || this.props.type === 'sensors') {
-                var hubUrl = Platform.OS === 'android' ? this.state.connectedHub.url : config.serverUrl;
+                const hubUrl = Platform.OS === 'android' ? this.state.connectedHub.url : config.serverUrl;
                 GetEntities(hubUrl)
                     .then(function (entities) {
                         if (entities === null) {
                             resolve([]);
                         }
-                        var data = [];
+                        let data = [];
                         if (this.props.type === 'actuators') {
                             data = this.getActuatorsWithNeededProperties(entities.actuators);
                             resolve(this.getItemsArray(data));
@@ -253,13 +253,13 @@ class CustomScrollView extends Component {
 
     getMenuData() {
         return new Promise(function (resolve, reject) {
-            var data = this.getMenuItemsArray();
+            const data = this.getMenuItemsArray();
             resolve(data);
         }.bind(this));
     }
 
     getMenuItemsArray() {
-        var menuItemsArray = [
+        let menuItemsArray = [
             {
                 id: 'actuators',
                 type: 'actuators',
@@ -306,14 +306,14 @@ class CustomScrollView extends Component {
         return new Promise(
             function (resolve, reject) {
                 wifi.loadWifiList((wifiStringList) => {
-                        var data = [];
-                        var wifiArray = JSON.parse(wifiStringList);
+                        let data = [];
+                        const wifiArray = JSON.parse(wifiStringList);
                         wifiArray.sort(function (a, b) {
-                            var aLevel = a.level;
-                            var bLevel = b.level;
+                            const aLevel = a.level;
+                            const bLevel = b.level;
                             return aLevel < bLevel ? 1 : aLevel > bLevel ? -1 : 0;
                         });
-                        var id = 0;
+                        let id = 0;
                         wifiArray.forEach(function (network) {
                             data.push({
                                 id: id,
@@ -335,11 +335,11 @@ class CustomScrollView extends Component {
     }
 
     getItemsArray(data) {
-        var oldFirstItem;
-        var oldLastItem;
-        var newFirstItem;
-        var newLastItem;
-        var items = data.slice();
+        let oldFirstItem;
+        let oldLastItem;
+        let newFirstItem;
+        let newLastItem;
+        let items = data.slice();
 
         if (items.length === 1) {
             items[0].isAlone = true;
@@ -385,12 +385,12 @@ class CustomScrollView extends Component {
     }
 
     shiftItemsIOS(event:Object) {
-        var width = this.state.width;
-        var itemSize = width - itemMargin;
-        var startPosition = itemSize - ((this.state.height - itemSize) / 2);
-        var contentOffsetY = event.nativeEvent.contentOffset.y;
-        var numOfItems = this.state.items.length;
-        var isLast = (contentOffsetY - startPosition) / (width - itemMargin) === numOfItems - 4;
+        const width = this.state.width;
+        const itemSize = width - itemMargin;
+        const startPosition = itemSize - ((this.state.height - itemSize) / 2);
+        const contentOffsetY = event.nativeEvent.contentOffset.y;
+        const numOfItems = this.state.items.length;
+        const isLast = (contentOffsetY - startPosition) / (width - itemMargin) === numOfItems - 4;
 
         if (numOfItems > 1) {
             if (contentOffsetY === startPosition) {
@@ -404,17 +404,17 @@ class CustomScrollView extends Component {
     }
 
     shiftItemsAndroid(position) {
-        var numOfItems = this.state.items.length;
+        const numOfItems = this.state.items.length;
         if (position === 0) {
             this.setTimeout(() => {
-                var page = numOfItems - 2;
+                const page = numOfItems - 2;
                 this.viewPager.setPageWithoutAnimation(page);
                 this.setState({page: page});
             }, 300);
         }
         if (position === numOfItems - 1) {
             this.setTimeout(() => {
-                var page = 1;
+                const page = 1;
                 this.viewPager.setPageWithoutAnimation(page);
                 this.setState({page: page});
             }, 300);
@@ -438,9 +438,9 @@ class CustomScrollView extends Component {
 
     makeItems() {
         if (this.state.items.length > 0) {
-            var items = [];
+            let items = [];
             this.state.items.forEach(function (item) {
-                var disabled = item.type === 'sensor' || item.type === 'hubDetected';
+                const disabled = item.type === 'sensor' || item.type === 'hubDetected';
                 items.push(
                     <View key={item.id}>
                         <TouchableOpacity
@@ -491,7 +491,7 @@ class CustomScrollView extends Component {
     }
 
     makeInfoItem(title) {
-        var item = {type: 'info', title: title, isAlone: true};
+        const item = {type: 'info', title: title, isAlone: true};
 
         return (
             <CustomScrollViewItem item={item}/>
@@ -510,7 +510,7 @@ class CustomScrollView extends Component {
         } else if (item.type === 'actuator') {
             this.handleActuatorPress(item);
         } else if (item.type === 'hub') {
-            var newHubData = {
+            const newHubData = {
                 title: item.title,
                 url: this.getHubUrl(item.bssid),
                 bssid: item.bssid,
@@ -572,9 +572,9 @@ class CustomScrollView extends Component {
     }
 
     handleActuatorPress(item) {
-        var encodedKey = encodeURIComponent('action');
-        var encodedValue = encodeURIComponent(item.state ? TURN_OFF : TURN_ON);
-        var formBody = encodedKey + '=' + encodedValue;
+        const encodedKey = encodeURIComponent('action');
+        const encodedValue = encodeURIComponent(item.state ? TURN_OFF : TURN_ON);
+        const formBody = encodedKey + '=' + encodedValue;
 
         fetch(item.actionUrl, {
                 method: 'POST',
@@ -600,8 +600,8 @@ class CustomScrollView extends Component {
     }
 
     getActuatorsWithNeededProperties(actuators) {
-        var result = [];
-        for (var i = 0, l = actuators.length; i < l; i++) {
+        let result = [];
+        for (let i = 0, l = actuators.length; i < l; i++) {
             result.push({
                 id: i,
                 deviceId: actuators[i].properties.id,
@@ -618,13 +618,13 @@ class CustomScrollView extends Component {
     }
 
     getSensorProperties(sensor) {
-        var result = [];
+        let result = [];
 
-        var sensorProperties = sensor.properties;
-        var propertiesKeys = Object.keys(sensorProperties);
+        const sensorProperties = sensor.properties;
+        const propertiesKeys = Object.keys(sensorProperties);
 
-        for (var i = 0, spl = propertiesKeys.length; i < spl; i++) {
-            var key = propertiesKeys[i];
+        for (let i = 0, spl = propertiesKeys.length; i < spl; i++) {
+            const key = propertiesKeys[i];
             if (
                 key === 'id' ||
                 key === 'illumThreshold' ||
@@ -648,8 +648,8 @@ class CustomScrollView extends Component {
     }
 
     getActuatorActionUrl(actuator) {
-        var actions = actuator.actions;
-        for (var i = 0, l = actions.length; i < l; i++) {
+        const actions = actuator.actions;
+        for (let i = 0, l = actions.length; i < l; i++) {
             if (actions[i].name === TURN_ON || actions[i].name === TURN_OFF) {
                 return actions[i].href;
             }
@@ -657,9 +657,9 @@ class CustomScrollView extends Component {
     }
 
     getTouchableOpacityStyle() {
-        var style = [styles.itemWrapper];
+        let style = [styles.itemWrapper];
 
-        var height;
+        let height;
         if (Platform.OS === 'ios') {
             style.push({
                 marginTop: itemMargin / 2,
@@ -695,7 +695,7 @@ class CustomScrollView extends Component {
             })
             .then(() => {
                 this.showMenu(this.props.navigator);
-                var toastMessage = `You are logged in as ${this.state.user.name}`;
+                const toastMessage = `You are logged in as ${this.state.user.name}`;
                 if (Platform.OS === 'android') {
                     ToastAndroid.show(toastMessage, ToastAndroid.LONG);
                 } else {
@@ -723,7 +723,7 @@ class CustomScrollView extends Component {
             })
             .then(() => {
                 this.showMenu(this.props.navigator);
-                var toastMessage = `You have been successfully logged out`;
+                const toastMessage = 'You have been successfully logged out';
                 if (Platform.OS === 'android') {
                     ToastAndroid.show(toastMessage, ToastAndroid.LONG);
                 } else {
@@ -745,13 +745,13 @@ class CustomScrollView extends Component {
             this.getHubsData()
                 .then(function (data) {
                     if (data.length > 0) {
-                        var hubWithTheBestSignal = data[0];
-                        var notificationData = {
+                        const hubWithTheBestSignal = data[0];
+                        const notificationData = {
                             title: hubWithTheBestSignal.title,
                             url: this.getHubUrl(hubWithTheBestSignal.bssid),
                             bssid: hubWithTheBestSignal.bssid,
                         };
-                        var hubWithTheBestSignalBssid = hubWithTheBestSignal.bssid;
+                        const hubWithTheBestSignalBssid = hubWithTheBestSignal.bssid;
                         if (this.notificationNeeded(hubWithTheBestSignalBssid)) {
                             PushNotification.localNotification({
                                 title: 'Zettor HUB Detected',
@@ -779,7 +779,7 @@ class CustomScrollView extends Component {
     }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
     itemWrapper: {
         marginLeft: itemMargin,
         marginRight: itemMargin,

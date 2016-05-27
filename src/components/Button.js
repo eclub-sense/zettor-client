@@ -3,7 +3,7 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableHighlight} from 'react-native';
 
-class Button extends React.Component {
+export default class Button extends React.Component {
     render() {
         return (
             <TouchableHighlight
@@ -17,7 +17,7 @@ class Button extends React.Component {
     }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
     button: {
         flex: 1,
         justifyContent: 'center',
@@ -35,5 +35,3 @@ var styles = StyleSheet.create({
         fontSize: 15,
     },
 });
-
-module.exports = Button;

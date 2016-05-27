@@ -1,15 +1,15 @@
 'use strict';
 
-var React = require('react-native');
-var {
+const React = require('react-native');
+const {
     Navigator,
     Platform,
     StyleSheet,
     } = React;
 
-var CustomScrollView = require('./components/CustomScrollView');
+const CustomScrollView = require('./components/CustomScrollView');
 
-var ROUTES = {
+const ROUTES = {
     customScrollView: CustomScrollView,
 };
 
@@ -33,12 +33,12 @@ module.exports = React.createClass({
         );
     },
     renderScene: function (route, navigator) {
-        var Component = ROUTES[route.name];
+        const Component = ROUTES[route.name];
         return <Component route={route} navigator={navigator} {...route.passProps}/>;
     }
 });
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#2C3E50',

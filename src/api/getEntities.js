@@ -6,8 +6,8 @@ module.exports = function (connectedHubUrl) {
             return response.json();
         })
         .then(function (json) {
-            var entities = json.entities;
-            var selfLinks = getEntitiesSelfLinks(entities);
+            const entities = json.entities;
+            const selfLinks = getEntitiesSelfLinks(entities);
 
             return new Promise(function (resolve, reject) {
                 fetchEntities(selfLinks)
@@ -24,10 +24,10 @@ module.exports = function (connectedHubUrl) {
         });
 
     function fetchEntities(selfLinks) {
-        var allEntities = selfLinks.map(fetchEntity);
+        const allEntities = selfLinks.map(fetchEntity);
 
         return Promise.all(allEntities).then(function (entities) {
-            var result = {actuators: [], sensors: []};
+            let result = {actuators: [], sensors: []};
 
             entities.forEach(function (value) {
                 if (
@@ -45,7 +45,7 @@ module.exports = function (connectedHubUrl) {
     }
 
     function getEntitiesSelfLinks(entities) {
-        var entitiesSelfLinks = [];
+        let entitiesSelfLinks = [];
         for (var i = 0, l = entities.length; i < l; i++) {
             entitiesSelfLinks.push(getEntitySelfLink(entities[i]));
         }
@@ -54,8 +54,8 @@ module.exports = function (connectedHubUrl) {
     }
 
     function getEntitySelfLink(entity) {
-        var links = entity.links;
-        for (var i = 0, l = links.length; i < l; i++) {
+        const links = entity.links;
+        for (let i = 0, l = links.length; i < l; i++) {
             if (links[i].rel.indexOf('self') > -1) {
                 return links[i].href;
             }

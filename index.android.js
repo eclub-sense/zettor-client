@@ -1,11 +1,9 @@
 'use strict';
 
-var React = require('react-native');
-
-var {
+import {
     AppRegistry,
-    } = React;
+} from 'react-native';
 
-var Main = require('./src/main.js');
+const Main = require('./src/main.js');
 
 AppRegistry.registerComponent('Zettor', () => Main);
